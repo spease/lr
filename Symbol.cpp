@@ -62,7 +62,7 @@ bool Symbol::isNonterminal() const
 
 bool Symbol::isTerminal() const
 {
-  return (m_type == Symbol::Type::T_TERMINAL || m_type == Symbol::Type::T_EPSILON);
+  return (m_type == Symbol::Type::T_TERMINAL || m_type == Symbol::Type::T_EPSILON || m_type == Symbol::Type::T_END);
 }
 
 size_t Symbol::sizeBytes() const
