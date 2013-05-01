@@ -3,9 +3,6 @@
 #include "Grammar.hpp"
 #include "Production.hpp"
 
-#include <algorithm>
-#include <iostream>
-
 /********************----- CLASS: LRParser -----********************/
 LRParser::LRParser()
 {
@@ -98,11 +95,9 @@ SymbolMap LRParser::buildFirst(Grammar const &i_grammar)
       currentMap[leftSymbol].insert(ss.begin(), ss.end());
     }
 
-    std::cout << "--------------------------------------------------" << std::endl;
     mapChanged = (prevMap != currentMap);
     if(mapChanged)
     {
-      std::cout << prevMap.size() << " != " << currentMap.size() << std::endl;
       prevMap = std::move(currentMap);
     }
   }
@@ -151,7 +146,6 @@ SymbolSet LRParser::follow(Symbol const &i_symbol) const
 /********************----- Operators -----********************/
 bool operator ==(SymbolMap const &i_A, SymbolMap const &i_B)
 {
-  bool result=true;
   if(i_A.size() != i_B.size())
   {
     return false;
@@ -162,17 +156,11 @@ bool operator ==(SymbolMap const &i_A, SymbolMap const &i_B)
     SymbolMap::const_iterator bit=i_B.find(ait->first);
     if(bit==i_B.end() || ait->second != bit->second)
     {
-      result=false;
+      return false;
     }
-
-    std::cout << ait->first.toString() << " ==>" << std::endl << "\t";
-    std::for_each(ait->second.begin(), ait->second.end(), [](Symbol const &s){std::cout << s.toString() << " ";});
-    std::cout << std::endl << "\t";
-    std::for_each(bit->second.begin(), bit->second.end(), [](Symbol const &s){std::cout << s.toString() << " ";});
-    std::cout << std::endl;
   }
 
-  return result;
+  return true;
 }
 bool operator !=(SymbolMap const &i_A, SymbolMap const &i_B)
 {
