@@ -1,0 +1,137 @@
+In file included from /usr/include/c++/4.8.0/bits/hashtable.h:35:0,
+                 from /usr/include/c++/4.8.0/unordered_map:47,
+                 from LRParser.hpp:8,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/hashtable_policy.h: In instantiation of 'std::__detail::_Hash_node<_Value, true>::_Hash_node(_Args&& ...) [with _Args = {std::pair<Symbol, Symbol>}; _Value = std::pair<const Symbol, std::set<Symbol> >]':
+/usr/include/c++/4.8.0/ext/new_allocator.h:120:4:   required from 'void __gnu_cxx::new_allocator<_Tp>::construct(_Up*, _Args&& ...) [with _Up = std::__detail::_Hash_node<std::pair<const Symbol, std::set<Symbol> >, true>; _Args = {std::pair<Symbol, Symbol>}; _Tp = std::__detail::_Hash_node<std::pair<const Symbol, std::set<Symbol> >, true>]'
+/usr/include/c++/4.8.0/bits/hashtable.h:727:6:   required from 'std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::__node_type* std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::_M_allocate_node(_Args&& ...) [with _Args = {std::pair<Symbol, Symbol>}; _Key = Symbol; _Value = std::pair<const Symbol, std::set<Symbol> >; _Alloc = std::allocator<std::pair<const Symbol, std::set<Symbol> > >; _ExtractKey = std::__detail::_Select1st; _Equal = std::equal_to<Symbol>; _H1 = std::hash<Symbol>; _H2 = std::__detail::_Mod_range_hashing; _Hash = std::__detail::_Default_ranged_hash; _RehashPolicy = std::__detail::_Prime_rehash_policy; _Traits = std::__detail::_Hashtable_traits<true, false, true>; std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::__node_type = std::__detail::_Hash_node<std::pair<const Symbol, std::set<Symbol> >, true>]'
+/usr/include/c++/4.8.0/bits/hashtable.h:1260:71:   required from 'std::pair<typename std::__detail::_Hashtable_base<_Key, _Value, _ExtractKey, _Equal, _H1, _H2, _Hash, _Traits>::iterator, bool> std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::_M_emplace(std::true_type, _Args&& ...) [with _Args = {std::pair<Symbol, Symbol>}; _Key = Symbol; _Value = std::pair<const Symbol, std::set<Symbol> >; _Alloc = std::allocator<std::pair<const Symbol, std::set<Symbol> > >; _ExtractKey = std::__detail::_Select1st; _Equal = std::equal_to<Symbol>; _H1 = std::hash<Symbol>; _H2 = std::__detail::_Mod_range_hashing; _Hash = std::__detail::_Default_ranged_hash; _RehashPolicy = std::__detail::_Prime_rehash_policy; _Traits = std::__detail::_Hashtable_traits<true, false, true>; typename std::__detail::_Hashtable_base<_Key, _Value, _ExtractKey, _Equal, _H1, _H2, _Hash, _Traits>::iterator = std::__detail::_Node_iterator<std::pair<const Symbol, std::set<Symbol> >, false, true>; std::true_type = std::integral_constant<bool, true>]'
+/usr/include/c++/4.8.0/bits/hashtable.h:665:69:   required from 'std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::__ireturn_type std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::emplace(_Args&& ...) [with _Args = {std::pair<Symbol, Symbol>}; _Key = Symbol; _Value = std::pair<const Symbol, std::set<Symbol> >; _Alloc = std::allocator<std::pair<const Symbol, std::set<Symbol> > >; _ExtractKey = std::__detail::_Select1st; _Equal = std::equal_to<Symbol>; _H1 = std::hash<Symbol>; _H2 = std::__detail::_Mod_range_hashing; _Hash = std::__detail::_Default_ranged_hash; _RehashPolicy = std::__detail::_Prime_rehash_policy; _Traits = std::__detail::_Hashtable_traits<true, false, true>; std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::__ireturn_type = std::pair<std::__detail::_Node_iterator<std::pair<const Symbol, std::set<Symbol> >, false, true>, bool>]'
+/usr/include/c++/4.8.0/bits/unordered_map.h:311:54:   required from 'std::pair<typename std::_Hashtable<_Key, std::pair<const _Key, _Tp>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::is_default_constructible<_Hash>, std::is_copy_assignable<_Hash>, std::__detail::__is_noexcept_hash<_Key, _Hash> > >::value, false, true> >::iterator, bool> std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>::emplace(_Args&& ...) [with _Args = {std::pair<Symbol, Symbol>}; _Key = Symbol; _Tp = std::set<Symbol>; _Hash = std::hash<Symbol>; _Pred = std::equal_to<Symbol>; _Alloc = std::allocator<std::pair<const Symbol, std::set<Symbol> > >; typename std::_Hashtable<_Key, std::pair<const _Key, _Tp>, _Alloc, std::__detail::_Select1st, _Pred, _Hash, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<std::__not_<std::__and_<std::__is_fast_hash<_Hash>, std::is_default_constructible<_Hash>, std::is_copy_assignable<_Hash>, std::__detail::__is_noexcept_hash<_Key, _Hash> > >::value, false, true> >::iterator = std::__detail::_Node_iterator<std::pair<const Symbol, std::set<Symbol> >, false, true>]'
+LRParser.cpp:223:52:   required from here
+/usr/include/c++/4.8.0/bits/hashtable_policy.h:177:55: error: no matching function for call to 'std::pair<const Symbol, std::set<Symbol> >::pair(std::pair<Symbol, Symbol>)'
+  : _M_v(std::forward<_Args>(__args)...), _M_hash_code() { }
+                                                       ^
+/usr/include/c++/4.8.0/bits/hashtable_policy.h:177:55: note: candidates are:
+In file included from /usr/include/c++/4.8.0/bits/stl_algobase.h:64:0,
+                 from /usr/include/c++/4.8.0/bits/char_traits.h:39,
+                 from /usr/include/c++/4.8.0/string:40,
+                 from Symbol.hpp:4,
+                 from LRParser.hpp:4,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/stl_pair.h:206:9: note: template<class ... _Args1, long unsigned int ..._Indexes1, class ... _Args2, long unsigned int ..._Indexes2> std::pair<_T1, _T2>::pair(std::tuple<_Args1 ...>&, std::tuple<_Args2 ...>&, std::_Index_tuple<_Indexes1 ...>, std::_Index_tuple<_Indexes2 ...>)
+         pair(tuple<_Args1...>&, tuple<_Args2...>&,
+         ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:206:9: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/4.8.0/bits/hashtable.h:35:0,
+                 from /usr/include/c++/4.8.0/unordered_map:47,
+                 from LRParser.hpp:8,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/hashtable_policy.h:177:55: note:   'std::pair<Symbol, Symbol>' is not derived from 'std::tuple<_Args1 ...>'
+  : _M_v(std::forward<_Args>(__args)...), _M_hash_code() { }
+                                                       ^
+In file included from /usr/include/c++/4.8.0/bits/stl_algobase.h:64:0,
+                 from /usr/include/c++/4.8.0/bits/char_traits.h:39,
+                 from /usr/include/c++/4.8.0/string:40,
+                 from Symbol.hpp:4,
+                 from LRParser.hpp:4,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/stl_pair.h:155:9: note: template<class ... _Args1, class ... _Args2> std::pair<_T1, _T2>::pair(std::piecewise_construct_t, std::tuple<_Args1 ...>, std::tuple<_Args2 ...>)
+         pair(piecewise_construct_t, tuple<_Args1...>, tuple<_Args2...>);
+         ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:155:9: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/4.8.0/bits/hashtable.h:35:0,
+                 from /usr/include/c++/4.8.0/unordered_map:47,
+                 from LRParser.hpp:8,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/hashtable_policy.h:177:55: note:   cannot convert 'std::forward<std::pair<Symbol, Symbol> >((* & __args#0))' (type 'std::pair<Symbol, Symbol>') to type 'std::piecewise_construct_t'
+  : _M_v(std::forward<_Args>(__args)...), _M_hash_code() { }
+                                                       ^
+In file included from /usr/include/c++/4.8.0/bits/stl_algobase.h:64:0,
+                 from /usr/include/c++/4.8.0/bits/char_traits.h:39,
+                 from /usr/include/c++/4.8.0/string:40,
+                 from Symbol.hpp:4,
+                 from LRParser.hpp:4,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/stl_pair.h:150:12: note: template<class _U1, class _U2, class> constexpr std::pair<_T1, _T2>::pair(std::pair<_U1, _U2>&&)
+  constexpr pair(pair<_U1, _U2>&& __p)
+            ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:150:12: note:   template argument deduction/substitution failed:
+/usr/include/c++/4.8.0/bits/stl_pair.h:147:38: error: no type named 'type' in 'struct std::enable_if<false, void>'
+       template<class _U1, class _U2, class = typename
+                                      ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:144:12: note: template<class _U1, class _U2, class> constexpr std::pair<_T1, _T2>::pair(_U1&&, _U2&&)
+  constexpr pair(_U1&& __x, _U2&& __y)
+            ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:144:12: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/4.8.0/bits/hashtable.h:35:0,
+                 from /usr/include/c++/4.8.0/unordered_map:47,
+                 from LRParser.hpp:8,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/hashtable_policy.h:177:55: note:   candidate expects 2 arguments, 1 provided
+  : _M_v(std::forward<_Args>(__args)...), _M_hash_code() { }
+                                                       ^
+In file included from /usr/include/c++/4.8.0/bits/stl_algobase.h:64:0,
+                 from /usr/include/c++/4.8.0/bits/char_traits.h:39,
+                 from /usr/include/c++/4.8.0/string:40,
+                 from Symbol.hpp:4,
+                 from LRParser.hpp:4,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/stl_pair.h:138:12: note: template<class _U2, class> constexpr std::pair<_T1, _T2>::pair(const _T1&, _U2&&)
+  constexpr pair(const _T1& __x, _U2&& __y)
+            ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:138:12: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/4.8.0/bits/hashtable.h:35:0,
+                 from /usr/include/c++/4.8.0/unordered_map:47,
+                 from LRParser.hpp:8,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/hashtable_policy.h:177:55: note:   cannot convert 'std::forward<std::pair<Symbol, Symbol> >((* & __args#0))' (type 'std::pair<Symbol, Symbol>') to type 'const Symbol&'
+  : _M_v(std::forward<_Args>(__args)...), _M_hash_code() { }
+                                                       ^
+In file included from /usr/include/c++/4.8.0/bits/stl_algobase.h:64:0,
+                 from /usr/include/c++/4.8.0/bits/char_traits.h:39,
+                 from /usr/include/c++/4.8.0/string:40,
+                 from Symbol.hpp:4,
+                 from LRParser.hpp:4,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/stl_pair.h:133:12: note: template<class _U1, class> constexpr std::pair<_T1, _T2>::pair(_U1&&, const _T2&)
+  constexpr pair(_U1&& __x, const _T2& __y)
+            ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:133:12: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/4.8.0/bits/hashtable.h:35:0,
+                 from /usr/include/c++/4.8.0/unordered_map:47,
+                 from LRParser.hpp:8,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/hashtable_policy.h:177:55: note:   candidate expects 2 arguments, 1 provided
+  : _M_v(std::forward<_Args>(__args)...), _M_hash_code() { }
+                                                       ^
+In file included from /usr/include/c++/4.8.0/bits/stl_algobase.h:64:0,
+                 from /usr/include/c++/4.8.0/bits/char_traits.h:39,
+                 from /usr/include/c++/4.8.0/string:40,
+                 from Symbol.hpp:4,
+                 from LRParser.hpp:4,
+                 from LRParser.cpp:1:
+/usr/include/c++/4.8.0/bits/stl_pair.h:128:17: note: constexpr std::pair<_T1, _T2>::pair(std::pair<_T1, _T2>&&) [with _T1 = const Symbol; _T2 = std::set<Symbol>]
+       constexpr pair(pair&&) = default;
+                 ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:128:17: note:   no known conversion for argument 1 from 'std::pair<Symbol, Symbol>' to 'std::pair<const Symbol, std::set<Symbol> >&&'
+/usr/include/c++/4.8.0/bits/stl_pair.h:127:17: note: constexpr std::pair<_T1, _T2>::pair(const std::pair<_T1, _T2>&) [with _T1 = const Symbol; _T2 = std::set<Symbol>]
+       constexpr pair(const pair&) = default;
+                 ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:127:17: note:   no known conversion for argument 1 from 'std::pair<Symbol, Symbol>' to 'const std::pair<const Symbol, std::set<Symbol> >&'
+/usr/include/c++/4.8.0/bits/stl_pair.h:124:12: note: template<class _U1, class _U2, class> constexpr std::pair<_T1, _T2>::pair(const std::pair<_U1, _U2>&)
+  constexpr pair(const pair<_U1, _U2>& __p)
+            ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:124:12: note:   template argument deduction/substitution failed:
+/usr/include/c++/4.8.0/bits/stl_pair.h:121:38: error: no type named 'type' in 'struct std::enable_if<false, void>'
+       template<class _U1, class _U2, class = typename
+                                      ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:112:26: note: constexpr std::pair<_T1, _T2>::pair(const _T1&, const _T2&) [with _T1 = const Symbol; _T2 = std::set<Symbol>]
+       _GLIBCXX_CONSTEXPR pair(const _T1& __a, const _T2& __b)
+                          ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:112:26: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/4.8.0/bits/stl_pair.h:108:26: note: constexpr std::pair<_T1, _T2>::pair() [with _T1 = const Symbol; _T2 = std::set<Symbol>]
+       _GLIBCXX_CONSTEXPR pair()
+                          ^
+/usr/include/c++/4.8.0/bits/stl_pair.h:108:26: note:   candidate expects 0 arguments, 1 provided
+make: *** [all] Error 1
