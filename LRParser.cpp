@@ -66,14 +66,14 @@ SymbolMap LRParser::buildFirst(Grammar const &i_grammar)
         for(size_t x=0; x<right.count(); ++x)
         {
           Symbol const &rightSymbol = right[x];
-          if(rightSymbol.isTerminal())
+          if(rightSymbol.isEpsilon())
+          {
+            ss.insert(rightSymbol);
+          }
+          else if(rightSymbol.isTerminal())
           {
             ss.insert(rightSymbol);
             break;
-          }
-          else if(rightSymbol.isEpsilon())
-          {
-            ss.insert(rightSymbol);
           }
           else
           {
