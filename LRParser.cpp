@@ -3,6 +3,26 @@
 #include "Grammar.hpp"
 #include "Production.hpp"
 
+#ifndef NDEBUG
+#include <iostream>
+void printSymbolMap(std::string const &i_name, SymbolMap const &i_map)
+{
+  std::cout << "===== " << i_name << " =====" << std::endl;
+  for(SymbolMap::const_iterator mit=i_map.begin(); mit!=i_map.end(); ++mit)
+  {
+    std::cout << "\t" << mit->first.toString() << " ==> ";
+
+    SymbolSet const &ss=mit->second;
+    for(SymbolSet::const_iterator sit=ss.begin(); sit!=ss.end(); ++sit)
+    {
+      std::cout << sit->toString() << " ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << "==================================================" << std::endl;
+}
+#endif
+
 /********************----- CLASS: LRParser -----********************/
 LRParser::LRParser()
 {
@@ -95,6 +115,10 @@ SymbolMap LRParser::buildFirst(Grammar const &i_grammar)
       currentMap[leftSymbol].insert(ss.begin(), ss.end());
     }
 
+#ifndef NDEBUG
+    printSymbolMap("FIRST: prevMap", prevMap);
+    printSymbolMap("FIRST: currentMap", currentMap);
+#endif
     mapChanged = (prevMap != currentMap);
     if(mapChanged)
     {
