@@ -72,23 +72,29 @@ size_t Symbol::sizeBytes() const
 
 std::string Symbol::toString() const
 {
+  bool shouldOutputValue = false;
   std::string outputValue;
   switch(m_type)
   {
+    case Symbol::Type::T_END:
+      outputValue += "END";
+      break;
     case Symbol::Type::T_EPSILON:
       outputValue += "EPS";
       break;
     case Symbol::Type::T_NONTERMINAL:
       outputValue += "NT";
+      shouldOutputValue = true;
       break;
     case Symbol::Type::T_TERMINAL:
       outputValue += "T";
+      shouldOutputValue = true;
       break;
     default:
       outputValue += "?";
   }
 
-  if(!this->isEpsilon())
+  if(shouldOutputValue)
   {
     outputValue += "(";
     outputValue += std::string(reinterpret_cast<char const * const>(m_value), m_valueSizeBytes);
