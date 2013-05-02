@@ -79,6 +79,7 @@ SymbolMap LRParser::buildFirst(Grammar const &i_grammar)
       SymbolSet ss;
       if(right.isEmpty() || (right.containsEpsilon() && right.count() == 1))
       {
+        /***** Add epsilon for empty rule *****/
         ss.insert(EPS());
       }
       else
@@ -86,27 +87,28 @@ SymbolMap LRParser::buildFirst(Grammar const &i_grammar)
         for(size_t x=0; x<right.count(); ++x)
         {
           Symbol const &rightSymbol = right[x];
-          if(rightSymbol.isEpsilon())
+          try
           {
-            ss.insert(rightSymbol);
-          }
-          else if(rightSymbol.isTerminal())
-          {
-            ss.insert(rightSymbol);
-            break;
-          }
-          else
-          {
-            SymbolSet const &prevSet = prevMap[rightSymbol];
-            if(!prevSet.empty())
-            {
-              ss.insert(prevSet.begin(), prevSet.end());
-            }
+            SymbolSet const &rightSet = LRParser::first(rightSymbol, prevMap);
 
-            if(prevSet.find(EPS()) == prevSet.end())
+            /***** Add FIRST of element to FIRST of rule *****/
+            ss.insert(rightSet.begin(), rightSet.end());
+
+            if(rightSet.find(EPS()) == rightSet.end())
             {
+              /***** Remove epsilon - this rule must always have something *****/
+              if(x==right.count()-1)
+              {
+                ss.erase(EPS());
+              }
               break;
             }
+          }
+          catch(std::out_of_range)
+          {
+#ifndef NDEBUG
+            std::cerr << "FIRST: Symbol '" << rightSymbol.toString() << "' has no first entry yet." << std::endl;
+#endif
           }
         }
       }
