@@ -22,11 +22,11 @@ int main(int const argc, char const * const * const argv)
   g |= NT("B") >>= T("1");
   */
   //g |= NT("B") >>= T("hello") + T(" ") + T("world") | T("goodbye") + T(" ") + T("world");
+  g |= NT("start_$") >>= NT("start");
   g |= NT("start") >>= NT("start") + NT("expr");
   g |= NT("start");
   g |= NT("expr") >>= T("NR");
   g |= NT("expr") >>= NT("expr") + T("+") + NT("expr");
-  g |= NT("start_$") >>= NT("start");
   
   LRParser p;
   bool pResult = p.setGrammar(&g);
