@@ -25,7 +25,8 @@ public:
   bool setGrammar(Grammar const * const i_grammarPointer);
 
   static SymbolMap buildFirst(Grammar const &i_grammar);
-  static SymbolMap buildFollow(Grammar const * const i_grammarPointer);
+  static SymbolMap buildFollow(SymbolMap const &i_first, Grammar const &i_grammar);
+  static SymbolSet first(Symbol const &i_symbol, SymbolMap const &i_symbolMap);
 private:
   LRParser(LRParser const &)=delete;
   LRParser(LRParser &&)=delete;

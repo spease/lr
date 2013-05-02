@@ -43,7 +43,7 @@ bool LRParser::setGrammar(Grammar const * const i_grammarPointer)
     return false;
   }
 
-  SymbolMap follow=LRParser::buildFollow(i_grammarPointer);
+  SymbolMap follow=LRParser::buildFollow(first, g);
   if(follow.empty())
   {
     return false;
@@ -129,28 +129,103 @@ SymbolMap LRParser::buildFirst(Grammar const &i_grammar)
   return prevMap;
 }
 
-SymbolMap LRParser::buildFollow(Grammar const * const i_grammarPointer)
+SymbolMap LRParser::buildFollow(SymbolMap const &i_first, Grammar const &i_grammar)
 {
-  if(i_grammarPointer == nullptr)
-  {
-    return SymbolMap();
-  }
-
-  Grammar const &g = *i_grammarPointer;
+  Grammar const &g=i_grammar;
   if(!g.isContextFree())
   {
     return SymbolMap();
   }
 
-  SymbolMap sm;
-  SymbolSet ss = {END()};
+  SymbolMap prevMap;
+  SymbolMap currentMap;
 
-  sm[g.startSymbol()] = ss;
+  SymbolSet startSet = {END()};
+  currentMap[g.startSymbol()] = std::move(startSet);
 
-  return sm;
+  for(size_t i=0; i<g.productionCount(); ++i)
+  {
+    Production const &p=g[i];
+    SymbolList const &right=p.right();
+    SymbolSet firstSet;
+
+    if(right.count() > 0)
+    {
+      firstSet = LRParser::first(right[right.count()-1], i_first);
+
+      for(size_t x=right.count()-1; x-- > 0;)
+      {
+        Symbol const &rightSymbol = right[x];
+
+        /***** Add FIRST(rightSymbol) onto FOLLOW(rightSymbol) *****/
+        if(rightSymbol.isNonterminal())
+        {
+          currentMap[rightSymbol].insert(firstSet.begin(), firstSet.end());
+        }
+
+        /***** If no epsilon, reset firstSet *****/
+        SymbolSet const &rightSet = LRParser::first(rightSymbol, i_first);
+        if(rightSet.find(EPS()) == rightSet.end())
+        {
+          firstSet.clear();
+        }
+
+        /***** Add FIRST(rightSymbol) onto firstSet *****/
+        firstSet.insert(rightSet.begin(), rightSet.end());
+      }
+    }
+  }
+
+  while(prevMap != currentMap)
+  {
+#ifndef NDEBUG
+    printSymbolMap("FOLLOW: prevMap", prevMap);
+    printSymbolMap("FOLLOW: currentMap", currentMap);
+#endif
+    prevMap = currentMap;
+
+    for(size_t i=0; i<g.productionCount(); ++i)
+    {
+      Production const &p=g[i];
+      Symbol const &leftSymbol=p.left()[0];
+      SymbolList const &right=p.right();
+
+      for(size_t x=right.count(); x-- > 0;)
+      {
+        Symbol const &rightSymbol=right[x];
+
+        /***** Move on if terminal *****/
+        if(rightSymbol.isTerminal())
+        {
+          break;
+        }
+
+        /***** Add on *****/
+        if(rightSymbol != leftSymbol)
+        {
+          SymbolSet const &leftSet=prevMap.at(leftSymbol);
+          currentMap[rightSymbol].insert(leftSet.begin(), leftSet.end());
+        }
+
+        /***** Stop processing if FIRST() does not contain epsilon *****/
+        SymbolSet const &rightSet = LRParser::first(rightSymbol, i_first);
+        if(rightSet.find(EPS()) == rightSet.end())
+        {
+          break;
+        }
+      }
+    }
+  }
+
+  return prevMap;
 }
 
 SymbolSet LRParser::first(Symbol const &i_symbol) const
+{
+  return LRParser::first(i_symbol, m_first);
+}
+
+SymbolSet LRParser::first(Symbol const &i_symbol, SymbolMap const &i_firstMap)
 {
   if(i_symbol.isTerminal())
   {
@@ -158,7 +233,7 @@ SymbolSet LRParser::first(Symbol const &i_symbol) const
     return ss;
   }
 
-  return m_first.at(i_symbol);
+  return i_firstMap.at(i_symbol);
 }
 
 SymbolSet LRParser::follow(Symbol const &i_symbol) const
