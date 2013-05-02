@@ -37,12 +37,15 @@ bool LRParser::setGrammar(Grammar const * const i_grammarPointer)
   }
 
   Grammar const &g = *i_grammarPointer;
+
+  /***** Build FIRST map *****/
   SymbolMap first=LRParser::buildFirst(g);
   if(first.empty())
   {
     return false;
   }
 
+  /***** Build FOLLOW map *****/
   SymbolMap follow=LRParser::buildFollow(first, g);
   if(follow.empty())
   {
@@ -109,6 +112,7 @@ SymbolMap LRParser::buildFirst(Grammar const &i_grammar)
 #ifndef NDEBUG
             std::cerr << "FIRST: Symbol '" << rightSymbol.toString() << "' has no first entry yet." << std::endl;
 #endif
+            break;
           }
         }
       }
