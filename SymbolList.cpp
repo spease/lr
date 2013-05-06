@@ -133,6 +133,42 @@ void SymbolList::clear()
   }
 }
 
+CompareResult SymbolList::compare(SymbolList const &i_symbolList) const
+{
+  /***** Same thing *****/
+  if(this == &i_symbolList)
+  {
+    return CompareResult::LESS;
+  }
+
+  /***** Check symbol count *****/
+  if(m_symbolCount < i_symbolList.m_symbolCount)
+  {
+    return CompareResult::GREATER;
+  }
+  else if(m_symbolCount > i_symbolList.m_symbolCount)
+  {
+    return CompareResult::GREATER;
+  }
+
+  /***** Check symbols *****/
+  for(size_t i=0; i<m_symbolCount; ++i)
+  {
+    CompareResult cr=this->get(i).compare(i_symbolList.get(i));
+    if(cr == CompareResult::LESS)
+    {
+      return CompareResult::LESS;
+    }
+    else if(cr == CompareResult::GREATER)
+    {
+      return CompareResult::GREATER;
+    }
+  }
+
+  /***** They are equal *****/
+  return CompareResult::EQUAL;
+}
+
 bool SymbolList::containsEpsilon() const
 {
   if(m_symbolCount < 1 || (enum_value(m_flags)&enum_value(SymbolList::Flags::F_EPSILON)))
@@ -180,36 +216,19 @@ Symbol const &SymbolList::operator [](size_t const i_index) const
   return this->get(i_index);
 }
 
+bool SymbolList::operator <(SymbolList const &i_symbolList) const
+{
+  return (this->compare(i_symbolList)==CompareResult::LESS);
+}
+
+bool SymbolList::operator >(SymbolList const &i_symbolList) const
+{
+  return (this->compare(i_symbolList)==CompareResult::GREATER);
+}
+
 bool SymbolList::operator ==(SymbolList const &i_symbolList) const
 {
-  /***** Check # of symbols *****/
-  if(m_symbolCount != i_symbolList.m_symbolCount)
-  {
-    return false;
-  }
-
-  /***** Check symbol size *****/
-  for(size_t i=0; i<m_symbolCount; ++i)
-  {
-    Symbol const &leftSymbol = this->get(i);
-    Symbol const &rightSymbol = i_symbolList.get(i);
-
-    if(leftSymbol.sizeBytes() != rightSymbol.sizeBytes())
-    {
-      return false;
-    }
-  }
-
-  /***** Check symbol contents *****/
-  for(size_t i=0; i<m_symbolCount; ++i)
-  {
-    if(this->get(i) != i_symbolList.get(i))
-    {
-      return false;
-    }
-  }
-
-  return true;
+  return (this->compare(i_symbolList)==CompareResult::EQUAL);
 }
 
 bool SymbolList::operator !=(SymbolList const &i_symbolList) const

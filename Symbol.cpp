@@ -1,6 +1,7 @@
 #include "Symbol.hpp"
 
 #include <string.h>
+#include "global.hpp"
 
 /********************----- CLASS: Symbol -----********************/
 Symbol::Symbol(Symbol::Type const &i_type, char const * const i_value)
@@ -43,6 +44,48 @@ Symbol::~Symbol()
     delete[] m_value;
     m_valueSizeBytes = 0;
   }
+}
+
+CompareResult Symbol::compare(Symbol const &i_otherSymbol) const
+{
+  if(this == &i_otherSymbol)
+  {
+    return CompareResult::EQUAL;
+  }
+
+  if(this->sizeBytes() < i_otherSymbol.sizeBytes())
+  {
+    return CompareResult::LESS;
+  }
+  else if(this->sizeBytes() > i_otherSymbol.sizeBytes())
+  {
+    return CompareResult::GREATER;
+  }
+
+  if(m_value == nullptr && i_otherSymbol.m_value != nullptr)
+  {
+    return CompareResult::LESS;
+  }
+  else if(m_value != nullptr && i_otherSymbol.m_value == nullptr)
+  {
+    return CompareResult::GREATER;
+  }
+  else if(m_value == i_otherSymbol.m_value)
+  {
+    return CompareResult::EQUAL;
+  }
+
+  int const memResult = memcmp(m_value, i_otherSymbol.m_value, m_valueSizeBytes);
+  if(memResult < 0)
+  {
+    return CompareResult::LESS;
+  }
+  else if(memResult > 0)
+  {
+    return CompareResult::GREATER;
+  }
+
+  return CompareResult::EQUAL;
 }
 
 bool Symbol::isEND() const
@@ -106,52 +149,17 @@ std::string Symbol::toString() const
 
 bool Symbol::operator <(Symbol const &i_otherSymbol) const
 {
-  if(this->sizeBytes() < i_otherSymbol.sizeBytes())
-  {
-    return true;
-  }
-  else if(this->sizeBytes() > i_otherSymbol.sizeBytes())
-  {
-    return false;
-  }
-  else if(m_value == nullptr && i_otherSymbol.m_value != nullptr)
-  {
-    return true;
-  }
-  else if(m_value != nullptr && i_otherSymbol.m_value == nullptr)
-  {
-    return false;
-  }
-  else if(m_value == i_otherSymbol.m_value)
-  {
-    return false;
-  }
-
-  int const memResult = memcmp(m_value, i_otherSymbol.m_value, m_valueSizeBytes);
-  return (memResult < 0);
+  return (this->compare(i_otherSymbol) == CompareResult::LESS);
 }
 
 bool Symbol::operator !=(Symbol const &i_otherSymbol) const
 {
-  return !(*this == i_otherSymbol);
+  return !(this->compare(i_otherSymbol) == CompareResult::EQUAL);
 }
 
 bool Symbol::operator ==(Symbol const &i_otherSymbol) const
 {
-  if(i_otherSymbol.m_type != m_type)
-  {
-    return false;
-  }
-  if(i_otherSymbol.m_valueSizeBytes != m_valueSizeBytes)
-  {
-    return false;
-  }
-  if(memcmp(i_otherSymbol.m_value, m_value, m_valueSizeBytes))
-  {
-    return false;
-  }
-
-  return true;
+  return (this->compare(i_otherSymbol) == CompareResult::EQUAL);
 }
 
 /**************************************************/

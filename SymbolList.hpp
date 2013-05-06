@@ -2,6 +2,7 @@
 #define _SYMBOLLIST_HPP_
 
 #include "Symbol.hpp"
+#include "global.hpp"
 
 #include <vector>
 
@@ -21,6 +22,7 @@ public:
 
   void clear();
 
+  CompareResult compare(SymbolList const &i_otherList) const;
   bool containsEpsilon() const;
 
   size_t count() const;
@@ -32,8 +34,10 @@ public:
   std::string toString() const;
 
   Symbol const &operator [](size_t const i_index) const;
+  bool operator <(SymbolList const &i_symbolList) const;
   bool operator==(SymbolList const &i_symbolList) const;
   bool operator!=(SymbolList const &i_symbolList) const;
+  bool operator >(SymbolList const &i_symbolList) const;
   SymbolList &operator += (SymbolList &&i_symbolList);
   SymbolList &operator += (SymbolList const &i_symbolList);
 private:

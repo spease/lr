@@ -1,6 +1,8 @@
 #ifndef _SYMBOL_HPP_
 #define _SYMBOL_HPP_
 
+#include "global.hpp"
+
 #include <string>
 
 class Symbol;
@@ -21,6 +23,8 @@ public:
   Symbol(Symbol const &i_symbol);
   Symbol(Symbol &&i_symbol);
   virtual ~Symbol();
+
+  CompareResult compare(Symbol const &i_symbol) const;
 
   bool isEND() const;
   bool isEpsilon() const;

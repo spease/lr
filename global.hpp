@@ -10,4 +10,13 @@ constexpr typename std::underlying_type<T>::type enum_value(T val)
     return static_cast<typename std::underlying_type<T>::type>(val);
 }
 
+/********************----- ENUM: CompareResult -----********************/
+enum class CompareResult
+{
+  LESS=-1,
+  EQUAL=0,
+  GREATER=1,
+};
+/**************************************************/
+
 #endif  /* _GLOBAL_HPP_ */
