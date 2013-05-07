@@ -60,7 +60,7 @@ SymbolList::SymbolList(SymbolList const &i_symbolList, size_t const i_position, 
   size_t copyLength = i_length;
   size_t copyPosition = i_position;
 
-  if(copyPosition >= i_symbolList.count())
+  if(copyPosition > i_symbolList.count())
   {
     throw std::out_of_range(std::to_string(copyPosition));
   }
@@ -74,11 +74,16 @@ SymbolList::SymbolList(SymbolList const &i_symbolList, size_t const i_position, 
     throw std::out_of_range(std::to_string(copyPosition+copyLength));
   }
 
+  if(copyLength < 1)
+  {
+    return;
+  }
+
   m_symbolArray = reinterpret_cast<Symbol*>(::operator new(sizeof(Symbol)*copyLength));
   for(size_t i=0; i<copyLength; ++i)
   {
     Symbol const &otherListSymbol=i_symbolList[copyPosition+i];
-    m_symbolArray = new(m_symbolArray) Symbol(otherListSymbol);
+    new(&m_symbolArray[i]) Symbol(otherListSymbol);
     if(otherListSymbol.isEpsilon())
     {
       m_flags = static_cast<SymbolList::Flags>(enum_value(m_flags) | enum_value(SymbolList::Flags::F_EPSILON));
