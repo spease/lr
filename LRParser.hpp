@@ -1,6 +1,7 @@
 #ifndef _LRPARSER_HPP_
 #define _LRPARSER_HPP_
 
+#include "LRItem.hpp"
 #include "Symbol.hpp"
 #include "SymbolList.hpp"
 
@@ -10,6 +11,7 @@
 class Grammar;
 class Production;
 
+typedef std::set<LRItem> LRItemSet;
 typedef std::set<Symbol> SymbolSet;
 typedef std::unordered_map<Symbol, SymbolSet> SymbolMap;
 
@@ -27,12 +29,15 @@ public:
   static SymbolMap buildFirst(Grammar const &i_grammar);
   static SymbolMap buildFollow(SymbolMap const &i_first, Grammar const &i_grammar);
   static SymbolSet first(Symbol const &i_symbol, SymbolMap const &i_symbolMap);
+  static SymbolSet firstList(SymbolList const &i_symbolList, SymbolMap const &i_symbolMap);
+  static LRItemSet closure(LRItemSet const &i_item, SymbolMap const &i_first, Grammar const &i_grammar);
 private:
   LRParser(LRParser const &)=delete;
   LRParser(LRParser &&)=delete;
   LRParser &operator =(LRParser const &)=delete;
   LRParser &operator =(LRParser &&)=delete;
 
+  SymbolSet m_closureCache;
   Grammar const *m_grammarPointer;
   SymbolMap m_first;
   SymbolMap m_follow;

@@ -29,36 +29,6 @@ LRParser::LRParser()
   m_grammarPointer = nullptr;
 }
 
-bool LRParser::setGrammar(Grammar const * const i_grammarPointer)
-{
-  if(i_grammarPointer == nullptr)
-  {
-    return false;
-  }
-
-  Grammar const &g = *i_grammarPointer;
-
-  /***** Build FIRST map *****/
-  SymbolMap first=LRParser::buildFirst(g);
-  if(first.empty())
-  {
-    return false;
-  }
-
-  /***** Build FOLLOW map *****/
-  SymbolMap follow=LRParser::buildFollow(first, g);
-  if(follow.empty())
-  {
-    return false;
-  }
-
-  m_first = first;
-  m_follow = follow;
-  m_grammarPointer = i_grammarPointer;
-
-  return true;
-}
-
 SymbolMap LRParser::buildFirst(Grammar const &i_grammar)
 {
   Grammar const &g=i_grammar;
@@ -79,43 +49,7 @@ SymbolMap LRParser::buildFirst(Grammar const &i_grammar)
       Symbol const &leftSymbol=production.left()[0];
       SymbolList const &right=production.right();
 
-      SymbolSet ss;
-      if(right.isEmpty() || (right.containsEpsilon() && right.count() == 1))
-      {
-        /***** Add epsilon for empty rule *****/
-        ss.insert(EPS());
-      }
-      else
-      {
-        for(size_t x=0; x<right.count(); ++x)
-        {
-          Symbol const &rightSymbol = right[x];
-          try
-          {
-            SymbolSet const &rightSet = LRParser::first(rightSymbol, prevMap);
-
-            /***** Add FIRST of element to FIRST of rule *****/
-            ss.insert(rightSet.begin(), rightSet.end());
-
-            if(rightSet.find(EPS()) == rightSet.end())
-            {
-              /***** Remove epsilon - this rule must always have something *****/
-              if(x==right.count()-1)
-              {
-                ss.erase(EPS());
-              }
-              break;
-            }
-          }
-          catch(std::out_of_range)
-          {
-#ifndef NDEBUG
-            std::cerr << "FIRST: Symbol '" << rightSymbol.toString() << "' has no first entry yet." << std::endl;
-#endif
-            break;
-          }
-        }
-      }
+      SymbolSet ss = LRParser::firstList(right, prevMap);
 
       /***** Add list *****/
       currentMap[leftSymbol].insert(ss.begin(), ss.end());
@@ -226,6 +160,59 @@ SymbolMap LRParser::buildFollow(SymbolMap const &i_first, Grammar const &i_gramm
   return prevMap;
 }
 
+LRItemSet LRParser::closure(LRItemSet const &i_itemSet, SymbolMap const &i_first, Grammar const &i_grammar)
+{
+  if(!i_grammar.isContextFree())
+  {
+    return LRItemSet();
+  }
+
+  LRItemSet outputSet(i_itemSet);
+
+  bool itemAdded = true;
+  while(!itemAdded)
+  {
+    itemAdded = false;
+
+    /***** Go through all the items passed in *****/
+    for(LRItemSet::const_iterator lit=i_itemSet.begin(); lit!=i_itemSet.end(); ++lit)
+    {
+      LRItem const &currentItem = (*lit);
+      SymbolList const &currentRight = currentItem.production().right();
+      Symbol currentRightSymbol=currentRight[currentItem.rightPosition()];
+
+      /***** Compute up and coming symbols *****/
+      SymbolList currentRightEnding=currentRight.sublist(currentItem.rightPosition()+1);
+      currentRightEnding += currentItem.lookahead();
+      SymbolSet expectedSymbols = LRParser::firstList(currentRightEnding, i_first);
+
+      /***** Go through all the productions matching the next symbol *****/
+      for(size_t productionIndex=0; productionIndex<i_grammar.productionCount(); ++productionIndex)
+      {
+        Production const &p=i_grammar[productionIndex];
+        if(p.left()[0] != currentRightSymbol)
+        {
+          continue;
+        }
+
+        for(SymbolSet::const_iterator esit=expectedSymbols.begin(); esit!=expectedSymbols.end(); ++esit)
+        {
+          LRItem finalItem(&p, 0, *esit);
+          
+          LRItemSet::const_iterator osit=outputSet.find(finalItem);
+          if(osit != outputSet.end())
+          {
+            outputSet.insert(std::move(finalItem));
+            itemAdded = true;
+          }
+        }
+      }
+    }
+  }
+
+  return outputSet;
+}
+
 SymbolSet LRParser::first(Symbol const &i_symbol) const
 {
   return LRParser::first(i_symbol, m_first);
@@ -242,9 +229,82 @@ SymbolSet LRParser::first(Symbol const &i_symbol, SymbolMap const &i_firstMap)
   return i_firstMap.at(i_symbol);
 }
 
+SymbolSet LRParser::firstList(SymbolList const &i_symbolList, SymbolMap const &i_firstMap)
+{
+  SymbolSet ss;
+  if(i_symbolList.isEmpty() || (i_symbolList.containsEpsilon() && i_symbolList.count() == 1))
+  {
+    /***** Add epsilon for empty rule *****/
+    ss.insert(EPS());
+  }
+  else
+  {
+    for(size_t x=0; x<i_symbolList.count(); ++x)
+    {
+      Symbol const &i_symbolListSymbol = i_symbolList[x];
+      try
+      {
+        SymbolSet const &i_symbolListSet = LRParser::first(i_symbolListSymbol, i_firstMap);
+
+        /***** Add FIRST of element to FIRST of rule *****/
+        ss.insert(i_symbolListSet.begin(), i_symbolListSet.end());
+
+        if(i_symbolListSet.find(EPS()) == i_symbolListSet.end())
+        {
+          /***** Remove epsilon - this rule must always have something *****/
+          if(x==i_symbolList.count()-1)
+          {
+            ss.erase(EPS());
+          }
+          break;
+        }
+      }
+      catch(std::out_of_range)
+      {
+#ifndef NDEBUG
+        std::cerr << "FIRST: Symbol '" << i_symbolListSymbol.toString() << "' has no first entry yet." << std::endl;
+#endif
+        break;
+      }
+    }
+  }
+
+  return ss;
+}
+
 SymbolSet LRParser::follow(Symbol const &i_symbol) const
 {
   return m_follow.at(i_symbol);
+}
+
+bool LRParser::setGrammar(Grammar const * const i_grammarPointer)
+{
+  if(i_grammarPointer == nullptr)
+  {
+    return false;
+  }
+
+  Grammar const &g = *i_grammarPointer;
+
+  /***** Build FIRST map *****/
+  SymbolMap first=LRParser::buildFirst(g);
+  if(first.empty())
+  {
+    return false;
+  }
+
+  /***** Build FOLLOW map *****/
+  SymbolMap follow=LRParser::buildFollow(first, g);
+  if(follow.empty())
+  {
+    return false;
+  }
+
+  m_first = first;
+  m_follow = follow;
+  m_grammarPointer = i_grammarPointer;
+
+  return true;
 }
 /**************************************************/
 
