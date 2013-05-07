@@ -4,6 +4,7 @@
 #include "Symbol.hpp"
 #include "global.hpp"
 
+#include <limits>
 #include <vector>
 
 /********************----- CLASS: SymbolList -----********************/
@@ -14,6 +15,7 @@ public:
   SymbolList(Symbol const &i_symbol);
   SymbolList(SymbolList &&i_symbolList);
   SymbolList(SymbolList const &i_symbolList);
+  SymbolList(SymbolList const &i_symbolList, size_t const i_position, size_t const i_length=std::numeric_limits<size_t>::max());
   SymbolList();
   virtual ~SymbolList();
 
@@ -30,6 +32,8 @@ public:
   Symbol const &get(size_t const i_index) const;
 
   bool isEmpty() const;
+
+  SymbolList sublist(size_t const i_position, size_t const i_length=std::numeric_limits<size_t>::max()) const;
 
   std::string toString() const;
 

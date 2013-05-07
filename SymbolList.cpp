@@ -1,6 +1,7 @@
 #include "SymbolList.hpp"
 #include "global.hpp"
 
+#include <limits>
 #include <stdexcept>
 
 /********************----- CLASS: SymbolList -----********************/
@@ -52,6 +53,38 @@ SymbolList::SymbolList(SymbolList const &i_symbolList)
   /***** Finish *****/
   m_symbolArray = nextSymbolArray;
   m_symbolCount = nextSymbolCount;
+}
+SymbolList::SymbolList(SymbolList const &i_symbolList, size_t const i_position, size_t const i_length)
+:m_flags(SymbolList::Flags::F_DEFAULT), m_symbolArray(nullptr), m_symbolCount(0)
+{
+  size_t copyLength = i_length;
+  size_t copyPosition = i_position;
+
+  if(copyPosition >= i_symbolList.count())
+  {
+    throw std::out_of_range(std::to_string(copyPosition));
+  }
+
+  if(i_length == std::numeric_limits<size_t>::max())
+  {
+    copyLength = i_symbolList.count()-copyPosition;
+  }
+  else if((copyPosition+copyLength) > i_symbolList.count())
+  {
+    throw std::out_of_range(std::to_string(copyPosition+copyLength));
+  }
+
+  m_symbolArray = reinterpret_cast<Symbol*>(::operator new(sizeof(Symbol)*copyLength));
+  for(size_t i=0; i<copyLength; ++i)
+  {
+    Symbol const &otherListSymbol=i_symbolList[copyPosition+i];
+    m_symbolArray = new(m_symbolArray) Symbol(otherListSymbol);
+    if(otherListSymbol.isEpsilon())
+    {
+      m_flags = static_cast<SymbolList::Flags>(enum_value(m_flags) | enum_value(SymbolList::Flags::F_EPSILON));
+    }
+    ++m_symbolCount;
+  }
 }
 
 SymbolList::SymbolList()
@@ -197,6 +230,11 @@ Symbol const &SymbolList::get(size_t const i_index) const
 bool SymbolList::isEmpty() const
 {
   return (this->count() == 0);
+}
+
+SymbolList SymbolList::sublist(size_t const i_position, size_t const i_length) const
+{
+  return SymbolList(*this, i_position, i_length);
 }
 
 std::string SymbolList::toString() const
