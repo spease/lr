@@ -21,6 +21,21 @@ void printSymbolMap(std::string const &i_name, SymbolMap const &i_map)
   }
   std::cout << "==================================================" << std::endl;
 }
+
+void printItemSet(std::string const &i_name, LRItemSet const &i_itemSet)
+{
+  std::cout << "===== " << i_name << " =====" << std::endl;
+  for(LRItemSet::const_iterator lit=i_itemSet.begin(); lit!=i_itemSet.end();++lit)
+  {
+    //for(size_t i=0; i<3 && lit!=i_itemSet.end(); ++i,++lit)
+    {
+      std::cout << lit->toString() << " ";
+    }
+
+    std::cout << std::endl;
+  }
+  std::cout << "==================================================" << std::endl;
+}
 #endif
 
 /********************----- CLASS: LRParser -----********************/
