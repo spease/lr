@@ -292,6 +292,27 @@ SymbolSet LRParser::follow(Symbol const &i_symbol) const
   return m_follow.at(i_symbol);
 }
 
+LRItemSet LRParser::paths(LRItemSet const &i_itemSet, Symbol const &i_symbol)
+{
+  LRItemSet outputSet;
+
+  for(LRItemSet::const_iterator isit=i_itemSet.begin(); isit!=i_itemSet.end(); ++isit)
+  {
+    SymbolList const &right=isit->production().right();
+    if(isit->rightPosition() >= right.count())
+    {
+      continue;
+    }
+
+    if(right[isit->rightPosition()] == i_symbol)
+    {
+      outputSet.insert(LRItem(&isit->production(), isit->rightPosition()+1, isit->lookahead()));
+    }
+  }
+
+  return outputSet;
+}
+
 bool LRParser::setGrammar(Grammar const * const i_grammarPointer)
 {
   if(i_grammarPointer == nullptr)

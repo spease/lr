@@ -24,6 +24,8 @@ public:
   static SymbolSet first(Symbol const &i_symbol, SymbolMap const &i_symbolMap);
   static SymbolSet firstList(SymbolList const &i_symbolList, SymbolMap const &i_symbolMap);
   static LRItemSet closure(LRItemSet const &i_item, SymbolMap const &i_first, Grammar const &i_grammar);
+  static LRItemSet paths(LRItemSet const &i_itemSet, Symbol const &i_symbol);
+
 private:
   LRParser(LRParser const &)=delete;
   LRParser(LRParser &&)=delete;
