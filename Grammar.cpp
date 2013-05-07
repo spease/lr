@@ -20,6 +20,7 @@ void Grammar::add(Production &&i_production)
   SymbolList const &left=p.left();
   SymbolList const &right=p.right();
 
+  /***** Update alphabet *****/
   for(size_t i=0; i<left.count(); ++i)
   {
     m_alphabet.insert(left[i]);
@@ -30,6 +31,7 @@ void Grammar::add(Production &&i_production)
     m_alphabet.insert(right[i]);
   }
 
+  /***** Update flags *****/
   if(left.count() > 1)
   {
     m_analysisFlags = static_cast<AnalysisFlags>(enum_value(m_analysisFlags) & (~enum_value(AnalysisFlags::F_CONTEXTFREE)));
@@ -78,7 +80,7 @@ Grammar &Grammar::operator |=(Production &&i_production)
 
 Grammar &Grammar::operator |=(Symbol &&i_symbol)
 {
-  this->add(Production(i_symbol));
+  this->add(Production(std::forward<Symbol>(i_symbol)));
 
   return (*this);
 }
