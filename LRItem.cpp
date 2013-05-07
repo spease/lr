@@ -67,7 +67,7 @@ Production const &LRItem::production() const
 {
   if(m_productionPointer == nullptr)
   {
-    throw std::runtime_error("Null pointer.");
+    throw std::bad_weak_ptr();
   }
 
   return (*m_productionPointer);
