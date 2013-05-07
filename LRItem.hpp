@@ -16,6 +16,10 @@ public:
 
   CompareResult compare(LRItem const &i_otherItem) const;
 
+  SymbolList const &lookahead() const;
+  Production const &production() const;
+  size_t rightPosition() const;
+
   bool operator <(LRItem const &i_otherItem) const;
   bool operator ==(LRItem const &i_otherItem) const;
   bool operator >(LRItem const &i_otherItem) const;

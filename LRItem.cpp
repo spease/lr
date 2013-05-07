@@ -2,6 +2,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 /********************----- CLASS: LRItem -----********************/
 LRItem::LRItem(Production const * const i_productionPointer, size_t const i_rightPosition, SymbolList const &i_lookahead)
 :m_productionPointer(i_productionPointer), m_rightPosition(i_rightPosition), m_lookahead(i_lookahead)
@@ -53,7 +55,27 @@ CompareResult LRItem::compare(LRItem const &i_otherItem) const
 
   /***** They are equal *****/
   return CompareResult::EQUAL;
-} 
+}
+
+SymbolList const &LRItem::lookahead() const
+{
+  return m_lookahead;
+}
+
+Production const &LRItem::production() const
+{
+  if(m_productionPointer == nullptr)
+  {
+    throw std::runtime_error("Null pointer.");
+  }
+
+  return (*m_productionPointer);
+}
+
+size_t LRItem::rightPosition() const
+{
+  return m_rightPosition;
+}
 
 bool LRItem::operator <(LRItem const &i_otherItem) const
 {
