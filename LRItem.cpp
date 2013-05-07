@@ -1,4 +1,5 @@
 #include "LRItem.hpp"
+#include "Production.hpp"
 
 #include <stddef.h>
 
@@ -75,6 +76,26 @@ Production const &LRItem::production() const
 size_t LRItem::rightPosition() const
 {
   return m_rightPosition;
+}
+
+std::string LRItem::toString() const
+{
+  std::string outputString;
+
+  outputString += "[";
+  outputString += m_productionPointer->left().toString();
+  outputString += " ::= ";
+  outputString += m_productionPointer->right().sublist(0, m_rightPosition).toString();
+  outputString += " . ";
+  if(m_rightPosition < m_productionPointer->right().count())
+  {
+    outputString += m_productionPointer->right().sublist(m_rightPosition).toString();
+  }
+  outputString += " , ";
+  outputString += m_lookahead.toString();
+  outputString += "]";
+
+  return outputString;
 }
 
 bool LRItem::operator <(LRItem const &i_otherItem) const

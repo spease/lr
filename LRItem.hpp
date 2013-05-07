@@ -21,6 +21,8 @@ public:
   Production const &production() const;
   size_t rightPosition() const;
 
+  std::string toString() const;
+
   bool operator <(LRItem const &i_otherItem) const;
   bool operator ==(LRItem const &i_otherItem) const;
   bool operator >(LRItem const &i_otherItem) const;
