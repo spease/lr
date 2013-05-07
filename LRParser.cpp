@@ -185,7 +185,7 @@ LRItemSet LRParser::closure(LRItemSet const &i_itemSet, SymbolMap const &i_first
   LRItemSet outputSet(i_itemSet);
 
   bool itemAdded = true;
-  while(!itemAdded)
+  while(itemAdded)
   {
     itemAdded = false;
 
@@ -215,7 +215,7 @@ LRItemSet LRParser::closure(LRItemSet const &i_itemSet, SymbolMap const &i_first
           LRItem finalItem(&p, 0, *esit);
           
           LRItemSet::const_iterator osit=outputSet.find(finalItem);
-          if(osit != outputSet.end())
+          if(osit == outputSet.end())
           {
             outputSet.insert(std::move(finalItem));
             itemAdded = true;
