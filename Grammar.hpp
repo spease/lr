@@ -1,6 +1,7 @@
 #ifndef _GRAMMAR_HPP_
 #define _GRAMMAR_HPP_
 
+#include "Symbol.hpp"
 #include "Production.hpp"
 
 #include <vector>
@@ -18,6 +19,9 @@ public:
   size_t productionCount() const;
   Symbol const &startSymbol() const;
 
+  SymbolSet::const_iterator alphabetBegin() const;
+  SymbolSet::const_iterator alphabetEnd() const;
+
   std::string toString() const;
   Grammar &operator |= (Symbol &&i_symbol);
   Grammar &operator |= (Production &&i_production);
@@ -33,6 +37,7 @@ private:
     F_DEFAULT=F_CONTEXTFREE,
   };
 
+  SymbolSet m_alphabet;
   AnalysisFlags m_analysisFlags;
 
   ProductionVector m_productions;

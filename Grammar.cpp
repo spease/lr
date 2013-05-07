@@ -16,10 +16,34 @@ void Grammar::add(Production &&i_production)
 {
   m_productions.push_back(std::forward<Production>(i_production));
 
-  if(m_productions.back().left().count() > 1)
+  Production const &p=m_productions.back();
+  SymbolList const &left=p.left();
+  SymbolList const &right=p.right();
+
+  for(size_t i=0; i<left.count(); ++i)
+  {
+    m_alphabet.insert(left[i]);
+  }
+
+  for(size_t i=0; i<right.count(); ++i)
+  {
+    m_alphabet.insert(right[i]);
+  }
+
+  if(left.count() > 1)
   {
     m_analysisFlags = static_cast<AnalysisFlags>(enum_value(m_analysisFlags) & (~enum_value(AnalysisFlags::F_CONTEXTFREE)));
   }
+}
+
+SymbolSet::const_iterator Grammar::alphabetBegin() const
+{
+  return m_alphabet.begin();
+}
+
+SymbolSet::const_iterator Grammar::alphabetEnd() const
+{
+  return m_alphabet.end();
 }
 
 size_t Grammar::productionCount() const
