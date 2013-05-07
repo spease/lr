@@ -175,6 +175,44 @@ SymbolMap LRParser::buildFollow(SymbolMap const &i_first, Grammar const &i_gramm
   return prevMap;
 }
 
+LRItemSet LRParser::buildItems(SymbolMap const &i_firstMap, Grammar const &i_grammar)
+{
+  LRItemSet outputSet;
+
+  LRItemSet augmentedStartItem = {LRItem(&i_grammar[0], 0, END())};
+  outputSet = LRParser::closure(augmentedStartItem, i_firstMap, i_grammar);
+
+  bool itemAdded = true;
+  while(itemAdded)
+  {
+    itemAdded = false;
+    for(LRItemSet::const_iterator osit=outputSet.begin(); osit!=outputSet.end(); ++osit)
+    {
+      LRItemSet currentItemSet={*osit};
+      for(SymbolSet::const_iterator ait=i_grammar.alphabetBegin(); ait!=i_grammar.alphabetEnd(); ++ait)
+      {
+        LRItemSet pathsResult = LRParser::paths(currentItemSet, *ait);
+        if(pathsResult.size() < 1)
+        {
+          continue;
+        }
+
+        for(LRItemSet::const_iterator prit=pathsResult.begin(); prit!=pathsResult.end(); ++prit)
+        {
+          LRItemSet::const_iterator findResult = outputSet.find(*prit);
+          if(findResult != outputSet.end())
+          {
+            outputSet.insert(*prit);
+            itemAdded = true;
+          }
+        }
+      }
+    }
+  }
+
+  return outputSet;
+}
+
 LRItemSet LRParser::closure(LRItemSet const &i_itemSet, SymbolMap const &i_first, Grammar const &i_grammar)
 {
   if(!i_grammar.isContextFree())
