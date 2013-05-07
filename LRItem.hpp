@@ -5,6 +5,7 @@
 #include "global.hpp"
 
 #include <stddef.h>
+#include <set>
 
 class Production;
 
@@ -28,6 +29,10 @@ private:
   size_t m_rightPosition;
   SymbolList m_lookahead;
 };
+/**************************************************/
+
+/********************----- Types -----********************/
+typedef std::set<LRItem> LRItemSet;
 /**************************************************/
 
 #endif /* _LRITEM_HPP_ */

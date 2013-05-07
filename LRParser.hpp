@@ -5,15 +5,8 @@
 #include "Symbol.hpp"
 #include "SymbolList.hpp"
 
-#include <set>
-#include <unordered_map>
-
 class Grammar;
 class Production;
-
-typedef std::set<LRItem> LRItemSet;
-typedef std::set<Symbol> SymbolSet;
-typedef std::unordered_map<Symbol, SymbolSet> SymbolMap;
 
 /********************----- CLASS: LRParser -----********************/
 class LRParser

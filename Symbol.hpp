@@ -3,7 +3,9 @@
 
 #include "global.hpp"
 
+#include <set>
 #include <string>
+#include <unordered_map>
 
 class Symbol;
 
@@ -71,6 +73,11 @@ namespace std
     }
   };
 }
+/**************************************************/
+
+/********************----- Types -----********************/
+typedef std::set<Symbol> SymbolSet;
+typedef std::unordered_map<Symbol, SymbolSet> SymbolMap;
 /**************************************************/
 
 #endif  /* _SYMBOL_HPP_ */
