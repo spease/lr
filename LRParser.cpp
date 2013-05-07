@@ -374,9 +374,21 @@ bool LRParser::setGrammar(Grammar const * const i_grammarPointer)
     return false;
   }
 
+  /***** Build items *****/
+  LRItemSet items=LRParser::buildItems(first, g);
+  if(items.empty())
+  {
+    return false;
+  }
+
+#ifndef NDEBUG
+  printItemSet("Items", items);
+#endif
+
   m_first = first;
   m_follow = follow;
   m_grammarPointer = i_grammarPointer;
+  m_items = items;
 
   return true;
 }

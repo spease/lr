@@ -38,6 +38,7 @@ private:
   Grammar const *m_grammarPointer;
   SymbolMap m_first;
   SymbolMap m_follow;
+  LRItemSet m_items;
 };
 /**************************************************/
 
