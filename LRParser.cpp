@@ -191,7 +191,7 @@ LRItemSet LRParser::buildItems(SymbolMap const &i_firstMap, Grammar const &i_gra
       LRItemSet currentItemSet={*osit};
       for(SymbolSet::const_iterator ait=i_grammar.alphabetBegin(); ait!=i_grammar.alphabetEnd(); ++ait)
       {
-        LRItemSet pathsResult = LRParser::paths(currentItemSet, *ait);
+        LRItemSet pathsResult = LRParser::paths(currentItemSet, *ait, i_firstMap, i_grammar);
         if(pathsResult.size() < 1)
         {
           continue;
@@ -330,7 +330,7 @@ SymbolSet LRParser::follow(Symbol const &i_symbol) const
   return m_follow.at(i_symbol);
 }
 
-LRItemSet LRParser::paths(LRItemSet const &i_itemSet, Symbol const &i_symbol)
+LRItemSet LRParser::paths(LRItemSet const &i_itemSet, Symbol const &i_symbol, SymbolMap const &i_firstMap, Grammar const &i_grammar)
 {
   LRItemSet outputSet;
 
@@ -348,7 +348,7 @@ LRItemSet LRParser::paths(LRItemSet const &i_itemSet, Symbol const &i_symbol)
     }
   }
 
-  return outputSet;
+  return LRParser::closure(outputSet, i_firstMap, i_grammar);
 }
 
 bool LRParser::setGrammar(Grammar const * const i_grammarPointer)
