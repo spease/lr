@@ -232,6 +232,10 @@ LRItemSet LRParser::closure(LRItemSet const &i_itemSet, SymbolMap const &i_first
     {
       LRItem const &currentItem = (*lit);
       SymbolList const &currentRight = currentItem.production().right();
+      if(currentItem.rightPosition() >= currentRight.count())
+      {
+        continue;
+      }
       Symbol currentRightSymbol=currentRight[currentItem.rightPosition()];
 
       /***** Compute up and coming symbols *****/
