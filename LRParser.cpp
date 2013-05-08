@@ -200,7 +200,7 @@ LRItemSet LRParser::buildItems(SymbolMap const &i_firstMap, Grammar const &i_gra
         for(LRItemSet::const_iterator prit=pathsResult.begin(); prit!=pathsResult.end(); ++prit)
         {
           LRItemSet::const_iterator findResult = outputSet.find(*prit);
-          if(findResult != outputSet.end())
+          if(findResult == outputSet.end())
           {
             outputSet.insert(*prit);
             itemAdded = true;
