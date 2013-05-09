@@ -140,7 +140,7 @@ std::string Symbol::toString() const
   if(shouldOutputValue)
   {
     outputValue += "(";
-    outputValue += std::string(reinterpret_cast<char const * const>(m_value), m_valueSizeBytes);
+    outputValue += std::string(reinterpret_cast<char const * const>(m_value), m_valueSizeBytes-1);
     outputValue += ")";
   }
 
