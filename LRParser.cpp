@@ -302,15 +302,15 @@ SymbolSet LRParser::firstList(SymbolList const &i_symbolList, SymbolMap const &i
   {
     for(size_t x=0; x<i_symbolList.count(); ++x)
     {
-      Symbol const &i_symbolListSymbol = i_symbolList[x];
+      Symbol const &symbolListSymbol = i_symbolList[x];
       try
       {
-        SymbolSet const &i_symbolListSet = LRParser::first(i_symbolListSymbol, i_firstMap);
+        SymbolSet const &symbolListSet = LRParser::first(symbolListSymbol, i_firstMap);
 
         /***** Add FIRST of element to FIRST of rule *****/
-        ss.insert(i_symbolListSet.begin(), i_symbolListSet.end());
+        ss.insert(symbolListSet.begin(), symbolListSet.end());
 
-        if(i_symbolListSet.find(EPS()) == i_symbolListSet.end())
+        if(symbolListSet.find(EPS()) == symbolListSet.end())
         {
           /***** Remove epsilon - this rule must always have something *****/
           if(x==i_symbolList.count()-1)
@@ -323,7 +323,7 @@ SymbolSet LRParser::firstList(SymbolList const &i_symbolList, SymbolMap const &i
       catch(std::out_of_range)
       {
 #ifndef NDEBUG
-        std::cerr << "FIRST: Symbol '" << i_symbolListSymbol.toString() << "' has no first entry yet." << std::endl;
+        std::cerr << "FIRST: Symbol '" << symbolListSymbol.toString() << "' has no first entry yet." << std::endl;
 #endif
         break;
       }
