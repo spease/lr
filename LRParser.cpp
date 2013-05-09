@@ -232,7 +232,7 @@ LRItemSet LRParser::closure(LRItemSet const &i_itemSet, SymbolMap const &i_first
     itemAdded = false;
 
     /***** Go through all the items passed in *****/
-    for(LRItemSet::const_iterator lit=i_itemSet.begin(); lit!=i_itemSet.end(); ++lit)
+    for(LRItemSet::const_iterator lit=outputSet.begin(); lit!=outputSet.end(); ++lit)
     {
       LRItem const &currentItem = (*lit);
       SymbolList const &currentRight = currentItem.production().right();
