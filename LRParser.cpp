@@ -240,7 +240,7 @@ LRItemSet LRParser::closure(LRItemSet const &i_itemSet, SymbolMap const &i_first
       {
         continue;
       }
-      Symbol currentRightSymbol=currentRight[currentItem.rightPosition()];
+      Symbol const &currentRightSymbol=currentRight[currentItem.rightPosition()];
 
       /***** Compute up and coming symbols *****/
       SymbolList currentRightEnding=currentRight.sublist(currentItem.rightPosition()+1);
