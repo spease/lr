@@ -158,8 +158,12 @@ SymbolMap LRParser::buildFollow(SymbolMap const &i_first, Grammar const &i_gramm
         /***** Add on *****/
         if(rightSymbol != leftSymbol)
         {
-          SymbolSet const &leftSet=prevMap.at(leftSymbol);
-          currentMap[rightSymbol].insert(leftSet.begin(), leftSet.end());
+          SymbolMap::const_iterator leftSetIterator=prevMap.find(leftSymbol);
+          if(leftSetIterator != prevMap.end())
+          {
+            SymbolSet const &leftSet=leftSetIterator->second;
+            currentMap[rightSymbol].insert(leftSet.begin(), leftSet.end());
+          }
         }
 
         /***** Stop processing if FIRST() does not contain epsilon *****/
