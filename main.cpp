@@ -2,8 +2,11 @@
 #include "Grammar.hpp"
 #include "Production.hpp"
 #include "Symbol.hpp"
+#include "LexText.hpp"
 
 #include <iostream>
+
+std::string const TEST_FILEPATH="testLex.txt";
 
 int main(int const argc, char const * const * const argv)
 {
@@ -48,6 +51,24 @@ int main(int const argc, char const * const * const argv)
     return 1;
   }
 
+#ifndef NDEBUG
+  std::cout << "====================----- " << TEST_FILEPATH << " -----====================" << std::endl;
+  LexText lt(TEST_FILEPATH);
+  Symbol s=END();
+  do
+  {
+    s = lt.pop();
+    std::cout << s.toString() << " ";
+  }
+  while(s != END());
+  std::cout << std::endl;
+  std::cout << "==================================================" << std::endl;
+
+  
+  std::cout << "====================----- Grammar -----====================" << std::endl;
   std::cout << g.toString();
+  std::cout << "==================================================" << std::endl;
+#endif
+
   return 0;
 }
