@@ -49,7 +49,7 @@ void Symbol::clear()
     delete[] m_value;
     m_valueSizeBytes = 0;
   }
-  m_type = Symbol::Type::NONE;
+  m_type = Symbol::Type::T_NONE;
 }
 
 CompareResult Symbol::compare(Symbol const &i_otherSymbol) const
