@@ -39,11 +39,17 @@ Symbol::Symbol(Symbol &&i_symbol)
 
 Symbol::~Symbol()
 {
+  this->clear();
+}
+
+void Symbol::clear()
+{
   if(m_value != nullptr)
   {
     delete[] m_value;
     m_valueSizeBytes = 0;
   }
+  m_type = Symbol::Type::NONE;
 }
 
 CompareResult Symbol::compare(Symbol const &i_otherSymbol) const
@@ -162,6 +168,24 @@ bool Symbol::operator ==(Symbol const &i_otherSymbol) const
   return (this->compare(i_otherSymbol) == CompareResult::EQUAL);
 }
 
+Symbol &Symbol::operator =(Symbol &&i_symbol)
+{
+  if(this == &i_symbol)
+  {
+    return (*this);
+  }
+
+  this->clear();
+  m_type = i_symbol.m_type;
+  m_value = i_symbol.m_value;
+  m_valueSizeBytes = i_symbol.m_valueSizeBytes;
+
+  i_symbol.m_type = Symbol::Type::T_NONE;
+  i_symbol.m_value = nullptr;
+  i_symbol.m_valueSizeBytes = 0;
+
+  return (*this);
+}
 /**************************************************/
 
 /********************----- Helpers -----********************/

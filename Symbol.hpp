@@ -15,6 +15,7 @@ class Symbol
 public:
   enum class Type
   {
+    T_NONE=0,
     T_END,
     T_EPSILON,
     T_NONTERMINAL,
@@ -40,14 +41,10 @@ public:
   bool operator <(Symbol const &i_otherSymbol) const;
   bool operator !=(Symbol const &i_otherSymbol) const;
   bool operator ==(Symbol const &i_otherSymbol) const;
-
-  static Symbol END();
-  static Symbol EPS();
-  static Symbol NT(char const * const i_name);
-  static Symbol T(char const * const i_value);
+  Symbol &operator=(Symbol &&i_symbol);
 private:
-  Symbol &operator =(Symbol const &)=delete;
-  Symbol &operator =(Symbol &&)=delete;
+  void clear();
+
   Symbol::Type m_type;
   uint8_t *m_value;
   size_t m_valueSizeBytes;
