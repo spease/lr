@@ -36,6 +36,21 @@ bool LRAction::isShift() const
 {
   return (m_type == LRAction::Type::SHIFT);
 }
+
+Production const &LRAction::production() const
+{
+  if(m_production == nullptr)
+  {
+    throw std::bad_weak_ptr();
+  }
+
+  return (*m_production);
+}
+
+LRState const &LRAction::state() const
+{
+  return m_state;
+}
 /**************************************************/
 
 /********************----- Helper Functions -----********************/
