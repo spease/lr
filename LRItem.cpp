@@ -6,8 +6,8 @@
 #include <memory>
 
 /********************----- CLASS: LRItem -----********************/
-LRItem::LRItem(Production const * const i_productionPointer, size_t const i_rightPosition, SymbolList const &i_lookahead)
-:m_productionPointer(i_productionPointer), m_rightPosition(i_rightPosition), m_lookahead(i_lookahead)
+LRItem::LRItem(Production const * const i_productionPointer, size_t const i_rightPosition, SymbolList const &i_lookahead, size_t const i_iteration)
+:m_productionPointer(i_productionPointer), m_rightPosition(i_rightPosition), m_lookahead(i_lookahead), m_iteration(i_iteration)
 {
 }
 
@@ -56,6 +56,11 @@ CompareResult LRItem::compare(LRItem const &i_otherItem) const
 
   /***** They are equal *****/
   return CompareResult::EQUAL;
+}
+
+size_t LRItem::iteration() const
+{
+  return m_iteration;
 }
 
 SymbolList const &LRItem::lookahead() const

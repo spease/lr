@@ -13,10 +13,11 @@ class Production;
 class LRItem
 {
 public:
-  LRItem(Production const * const i_productionPtr, size_t const i_rightPosition, SymbolList const &i_lookahead);
+  LRItem(Production const * const i_productionPtr, size_t const i_rightPosition, SymbolList const &i_lookahead, size_t const i_iteration);
 
   CompareResult compare(LRItem const &i_otherItem) const;
 
+  size_t iteration() const;
   SymbolList const &lookahead() const;
   Production const &production() const;
   size_t rightPosition() const;
@@ -30,6 +31,7 @@ private:
   Production const *m_productionPointer;
   size_t m_rightPosition;
   SymbolList m_lookahead;
+  size_t m_iteration;
 };
 /**************************************************/
 
