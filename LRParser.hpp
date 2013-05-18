@@ -1,7 +1,10 @@
 #ifndef _LRPARSER_HPP_
 #define _LRPARSER_HPP_
 
+#include "Lex.hpp"
+#include "LRAction.hpp"
 #include "LRItem.hpp"
+#include "LRState.hpp"
 #include "Symbol.hpp"
 #include "SymbolList.hpp"
 
@@ -15,9 +18,13 @@ public:
   LRParser();
   virtual ~LRParser(){}
 
-  SymbolSet first(Symbol const &i_symbol) const;
-  SymbolSet follow(Symbol const &i_symbol) const;
+  bool parse(Lex &i_lex);
   bool setGrammar(Grammar const * const i_grammarPointer);
+
+protected:
+
+  LRAction action(LRState const &i_currentState, Symbol const &i_token);
+  LRState path(LRState const &i_currentState, Symbol const &i_symbol);
 
   static SymbolMap buildFirst(Grammar const &i_grammar);
   static SymbolMap buildFollow(SymbolMap const &i_first, Grammar const &i_grammar);
@@ -34,6 +41,7 @@ private:
   LRParser &operator =(LRParser const &)=delete;
   LRParser &operator =(LRParser &&)=delete;
 
+  LRActionSet m_actions;
   SymbolSet m_closureCache;
   Grammar const *m_grammarPointer;
   SymbolMap m_first;

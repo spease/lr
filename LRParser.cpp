@@ -1,4 +1,6 @@
 #include "LRParser.hpp"
+#include "LRAction.hpp"
+#include "LRState.hpp"
 
 #include "Grammar.hpp"
 #include "Production.hpp"
@@ -276,11 +278,6 @@ LRItemSet LRParser::closure(LRItemSet const &i_itemSet, size_t const i_iteration
   return outputSet;
 }
 
-SymbolSet LRParser::first(Symbol const &i_symbol) const
-{
-  return LRParser::first(i_symbol, m_first);
-}
-
 SymbolSet LRParser::first(Symbol const &i_symbol, SymbolMap const &i_firstMap)
 {
   if(i_symbol.isTerminal())
@@ -335,9 +332,44 @@ SymbolSet LRParser::firstList(SymbolList const &i_symbolList, SymbolMap const &i
   return ss;
 }
 
-SymbolSet LRParser::follow(Symbol const &i_symbol) const
+bool LRParser::parse(Lex &i_lex)
 {
-  return m_follow.at(i_symbol);
+  LRStateStack stateStack;
+  SymbolStack symbolStack;
+  Symbol token = i_lex.pop();
+  while(true)
+  {
+    LRState s=stateStack.top();
+    LRAction const &action=this->action(s, token);
+    if(action.isShift())
+    {
+      symbolStack.push(token);
+      stateStack.push(action.state());
+      token=i_lex.pop();
+    }
+    else if(action.isReduce())
+    {
+      Production const &p = action.production();
+      Symbol const &leftSymbol = p.left()[0];
+      SymbolList const &right = p.right();
+      size_t const popCount = right.count();
+      for(size_t x=0; x<popCount; ++x)
+      {
+        symbolStack.pop();
+        stateStack.pop();
+      }
+      symbolStack.push(leftSymbol);
+      stateStack.push(this->path(s, leftSymbol));
+    }
+    else if(action.isAccept())
+    {
+      return true;
+    }
+    else
+    {
+      throw std::runtime_error("NOES!");
+    }
+  }
 }
 
 LRItemSet LRParser::paths(LRItemSet const &i_itemSet, size_t const i_iteration, Symbol const &i_symbol, SymbolMap const &i_firstMap, Grammar const &i_grammar)
