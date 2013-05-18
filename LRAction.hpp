@@ -4,6 +4,8 @@
 #include "LRState.hpp"
 #include "Production.hpp"
 
+#include <set>
+
 /********************----- CLASS: LRAction -----********************/
 class LRAction
 {
@@ -40,6 +42,10 @@ private:
 LRAction ACCEPT();
 LRAction REDUCE(Production const * const i_production);
 LRAction SHIFT(LRState const i_state);
+/**************************************************/
+
+/********************----- Types -----********************/
+typedef std::set<LRAction> LRActionSet;
 /**************************************************/
 
 #endif /* _LRACTION_HPP_ */
