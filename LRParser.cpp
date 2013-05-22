@@ -29,6 +29,10 @@ void printItemSet(std::string const &i_name, LRItemSet const &i_itemSet)
   std::cout << "===== " << i_name << " =====" << std::endl;
   for(LRItemSet::const_iterator lit=i_itemSet.begin(); lit!=i_itemSet.end();++lit)
   {
+    for(size_t i=0; i<lit->iteration(); ++i)
+    {
+      std::cout << "\t";
+    }
     //for(size_t i=0; i<3 && lit!=i_itemSet.end(); ++i,++lit)
     {
       std::cout << lit->toString() << " ";
@@ -184,17 +188,18 @@ SymbolMap LRParser::buildFollow(SymbolMap const &i_first, Grammar const &i_gramm
 LRItemSet LRParser::buildItems(SymbolMap const &i_firstMap, Grammar const &i_grammar)
 {
   size_t iteration=0;
-  LRItemSet outputSet;
+  LRItemSet currentSet;
+  LRItemSet previousSet;
 
   LRItemSet augmentedStartItem = {LRItem(&i_grammar[0], 0, END(), iteration)};
-  outputSet = LRParser::closure(augmentedStartItem, iteration, i_firstMap, i_grammar);
+  previousSet = currentSet = LRParser::closure(augmentedStartItem, iteration, i_firstMap, i_grammar);
 
   bool itemAdded = true;
   while(itemAdded)
   {
     itemAdded = false;
     ++iteration;
-    for(LRItemSet::const_iterator osit=outputSet.begin(); osit!=outputSet.end(); ++osit)
+    for(LRItemSet::const_iterator osit=previousSet.begin(); osit!=previousSet.end(); ++osit)
     {
       LRItemSet currentItemSet={*osit};
       for(SymbolSet::const_iterator ait=i_grammar.alphabetBegin(); ait!=i_grammar.alphabetEnd(); ++ait)
@@ -207,18 +212,20 @@ LRItemSet LRParser::buildItems(SymbolMap const &i_firstMap, Grammar const &i_gra
 
         for(LRItemSet::const_iterator prit=pathsResult.begin(); prit!=pathsResult.end(); ++prit)
         {
-          LRItemSet::const_iterator findResult = outputSet.find(*prit);
-          if(findResult == outputSet.end())
+          LRItemSet::const_iterator findResult = currentSet.find(*prit);
+          if(findResult == currentSet.end())
           {
-            outputSet.insert(*prit);
+            currentSet.insert(*prit);
             itemAdded = true;
           }
         }
       }
     }
+
+    previousSet = currentSet;
   }
 
-  return outputSet;
+  return currentSet;
 }
 
 LRItemSet LRParser::closure(LRItemSet const &i_itemSet, size_t const i_iteration, SymbolMap const &i_first, Grammar const &i_grammar)
