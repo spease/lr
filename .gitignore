@@ -1,2 +1,4 @@
 *.swp
 bin/
+tags
+types_c.taghl
