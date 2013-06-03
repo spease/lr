@@ -1,6 +1,8 @@
 #include "LRItem.hpp"
 #include "Production.hpp"
 
+#include <iostream>
+
 #include <stddef.h>
 
 #include <memory>
@@ -116,5 +118,26 @@ bool LRItem::operator ==(LRItem const &i_otherItem) const
 bool LRItem::operator >(LRItem const &i_otherItem) const
 {
   return (this->compare(i_otherItem) == CompareResult::GREATER);
+}
+/**************************************************/
+
+/********************----- Helper Functions -----********************/
+void printItemSet(std::string const &i_name, LRItemSet const &i_itemSet)
+{
+  std::cout << "===== " << i_name << " =====" << std::endl;
+  for(LRItemSet::const_iterator lit=i_itemSet.begin(); lit!=i_itemSet.end();++lit)
+  {
+    for(size_t i=0; i<lit->iteration(); ++i)
+    {
+      std::cout << "\t";
+    }
+    //for(size_t i=0; i<3 && lit!=i_itemSet.end(); ++i,++lit)
+    {
+      std::cout << lit->toString() << " ";
+    }
+
+    std::cout << std::endl;
+  }
+  std::cout << "==================================================" << std::endl;
 }
 /**************************************************/

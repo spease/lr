@@ -79,4 +79,13 @@ typedef std::unordered_map<Symbol, SymbolSet> SymbolMap;
 typedef std::stack<Symbol> SymbolStack;
 /**************************************************/
 
+/********************----- Operators -----********************/
+bool operator ==(SymbolMap const &i_A, SymbolMap const &i_B);
+bool operator !=(SymbolMap const &i_A, SymbolMap const &i_B);
+/**************************************************/
+
+/********************----- Helper Functions -----********************/
+void printSymbolMap(std::string const &i_name, SymbolMap const &i_map);
+/**************************************************/
+
 #endif  /* _SYMBOL_HPP_ */

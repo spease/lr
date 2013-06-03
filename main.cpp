@@ -43,13 +43,7 @@ int main(int const argc, char const * const * const argv)
   g |= NT("expr") >>= NT("expr") + T("+") + NT("expr");
   */
 
-  LRParser p;
-  bool pResult = p.setGrammar(&g);
-  if(!pResult)
-  {
-    std::cerr << "Couldn't set grammar" << std::endl;
-    return 1;
-  }
+  LRParser p(LRTable::Type::LR, 1, g);
 
 #ifndef NDEBUG
   std::cout << "====================----- " << TEST_FILEPATH << " -----====================" << std::endl;

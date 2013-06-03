@@ -59,6 +59,21 @@ private:
 };
 /**************************************************/
 
+/********************----- Hash Function -----********************/
+namespace std
+{
+  template <>
+  struct hash<SymbolList> : public unary_function<SymbolList, size_t>
+  {
+    size_t operator ()(SymbolList const &i_symbolList) const
+    {
+      return i_symbolList.count();
+    }
+  };
+}
+/**************************************************/
+
+
 /********************----- Operators -----********************/
 SymbolList operator +(SymbolList &&i_A, SymbolList &&i_B);
 /**************************************************/

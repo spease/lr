@@ -209,3 +209,49 @@ Symbol T(char const * const i_value)
   return Symbol(Symbol::Type::T_TERMINAL, i_value);
 }
 /**************************************************/
+
+/********************----- Helper Functions -----********************/
+#include <iostream>
+void printSymbolMap(std::string const &i_name, SymbolMap const &i_map)
+{
+  std::cout << "===== " << i_name << " =====" << std::endl;
+  for(SymbolMap::const_iterator mit=i_map.begin(); mit!=i_map.end(); ++mit)
+  {
+    std::cout << "\t" << mit->first.toString() << " ==> ";
+
+    SymbolSet const &ss=mit->second;
+    for(SymbolSet::const_iterator sit=ss.begin(); sit!=ss.end(); ++sit)
+    {
+      std::cout << sit->toString() << " ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << "==================================================" << std::endl;
+}
+/**************************************************/
+
+/********************----- Operators -----********************/
+bool operator ==(SymbolMap const &i_A, SymbolMap const &i_B)
+{
+  if(i_A.size() != i_B.size())
+  {
+    return false;
+  }
+
+  for(SymbolMap::const_iterator ait=i_A.begin(); ait!=i_A.end(); ++ait)
+  {
+    SymbolMap::const_iterator bit=i_B.find(ait->first);
+    if(bit==i_B.end() || ait->second != bit->second)
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool operator !=(SymbolMap const &i_A, SymbolMap const &i_B)
+{
+  return !(i_A == i_B);
+}
+/**************************************************/

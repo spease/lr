@@ -39,4 +39,8 @@ private:
 typedef std::set<LRItem> LRItemSet;
 /**************************************************/
 
+/********************----- Helper Functions -----********************/
+void printItemSet(std::string const &i_name, LRItemSet const &i_itemSet);
+/**************************************************/
+
 #endif /* _LRITEM_HPP_ */
