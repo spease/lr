@@ -14,7 +14,13 @@ LRTable::LRTable(LRTable::Type const i_type, Grammar const &i_grammar)
   }
 
   /***** Build items *****/
-  LRItemSet items=LRTable::buildItems(g);
+  LRItemSet items;
+  switch(i_type)
+  {
+  case Type::LR:
+    items=LRTable::buildLRItems(g);
+    break;
+  }
   if(items.empty())
   {
     throw std::range_error("No items built from grammar.");
@@ -58,27 +64,84 @@ LRAction LRTable::action(LRState const &i_currentState, SymbolList const &i_symb
   return actionPair.first->second;
 }
 
-LRItemSet LRTable::buildItems(Grammar const &i_grammar)
+#if 0
+LRItemSet LRTable::computeKernelItems(LRItemSet const &i_nonkernelItems, size_t const i_iteration, Grammar const &i_grammar)
 {
-  size_t iteration=0;
-  LRItemSet currentSet;
-  LRItemSet previousSet;
+}
 
-  LRItemSet augmentedStartItem = {LRItem(&i_grammar[0], 0, END(), iteration)};
-  previousSet = currentSet = LRTable::closure(augmentedStartItem, iteration, i_grammar);
-  ++iteration;
+LRItemSet LRTable::computeNonkernelItems(LRItemSet const &i_kernelItems, size_t const i_iteration, Grammar const &i_grammar)
+{
+}
+
+LRItemSet LRTable::buildLALRItems(Grammar const &i_grammar)
+{
+  std::vector<LRItemSet> kernelItems;
+  std::vector<LRItemSet> nonkernelItems;
+  size_t iteration=0;
+
+  bool itemAdded=true;
+  while(itemAdded)
+  {
+    LRItemSet currentKernelItems;
+    LRItemSet currentNonkernelItems;
+
+    /***** Build kernel items *****/
+    if(iteration == 0)
+    {
+      currentKernelItems.insert(LRItem(&i_grammar[0], 0, END(), iteration));
+    }
+    else
+    {
+      currentKernelItems = LRTable::computeKernelItems(nonkernelItems[iteration-1], iteration, i_grammar);
+    }
+
+    /***** Build nonkernel items *****/
+    currentNonkernelItems = LRTable::computeNonkernelItems(currentKernelItems, iteration, i_grammar);
+
+    /***** Allocate *****/
+    if(currentKernelItems.size() > 0 || currentNonkernelItems.size() > 0)
+    {
+      kernelItems.push_back(LRItemSet());
+      nonkernelItems.push_back(LRItemSet());
+    }
+
+    /***** Save *****/
+    if(currentKernelItems.size() > 0)
+    {
+      kernelItems[iteration].insert(currentKernelItems.begin(), currentKernelItems.end());
+    }
+    if(currentNonkernelItems.size() > 0)
+    {
+      nonkernelItems[iteration].insert(currentNonkernelItems.begin(), currentNonkernelItems.end());
+    }
+  }
+}
+#endif
+
+LRItemSet LRTable::buildLRItems(Grammar const &i_grammar)
+{
+  LRItemSet items;
+  std::vector<LRItemSet> states;
+  size_t iteration=0;
+
+  /***** Do start state *****/
+  LRItemSet const startState = {LRItem(&i_grammar[0], 0, END(), iteration)};
+  LRItemSet const startStateClosure = LRTable::closure(startState, iteration, i_grammar);
+  items.insert(startStateClosure.begin(), startStateClosure.end());
+  states.push_back(startStateClosure);
+  iteration=states.size();
 
   bool itemAdded = true;
   while(itemAdded)
   {
     itemAdded = false;
-    for(LRItemSet::const_iterator osit=previousSet.begin(); osit!=previousSet.end(); ++osit)
+    for(size_t i=0; i<states.size(); ++i)
     {
-      LRItemSet currentItemSet={*osit};
+      LRItemSet const &sourceState=states[i];
+      LRItemSet currentState;
       for(SymbolSet::const_iterator ait=i_grammar.alphabetBegin(); ait!=i_grammar.alphabetEnd(); ++ait)
       {
-        bool alphabetItemAdded=false;
-        LRItemSet pathsResult = LRTable::computePaths(currentItemSet, iteration, *ait, i_grammar);
+        LRItemSet pathsResult = LRTable::computePaths(sourceState, iteration, *ait, i_grammar);
         if(pathsResult.size() < 1)
         {
           continue;
@@ -86,26 +149,25 @@ LRItemSet LRTable::buildItems(Grammar const &i_grammar)
 
         for(LRItemSet::const_iterator prit=pathsResult.begin(); prit!=pathsResult.end(); ++prit)
         {
-          LRItemSet::const_iterator findResult = currentSet.find(*prit);
-          if(findResult == currentSet.end())
+          LRItemSet::const_iterator findResult = items.find(*prit);
+          if(findResult == items.end())
           {
-            currentSet.insert(*prit);
-            alphabetItemAdded = true;
+            currentState.insert(*prit);
             itemAdded = true;
           }
         }
 
-        if(alphabetItemAdded)
+        if(currentState.size() > 0)
         {
-          ++iteration;
+          items.insert(currentState.begin(), currentState.end());
+          states.push_back(currentState);
+          iteration=states.size();
         }
       }
     }
-
-    previousSet = currentSet;
   }
 
-  return currentSet;
+  return items;
 }
 
 LRItemSet LRTable::closure(LRItemSet const &i_itemSet, size_t const i_iteration, Grammar const &i_grammar)

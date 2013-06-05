@@ -26,7 +26,7 @@ public:
   LRAction action(LRState const &i_currentState, SymbolList const &i_token) const;
   LRState path(LRState const &i_currentState, SymbolList const &i_symbol) const;
 protected:
-  static LRItemSet buildItems(Grammar const &i_grammar);
+  static LRItemSet buildLRItems(Grammar const &i_grammar);
   static LRItemSet closure(LRItemSet const &i_item, size_t const i_iteration, Grammar const &i_grammar);
   static LRItemSet computePaths(LRItemSet const &i_itemSet, size_t const i_iteration, Symbol const &i_symbol, Grammar const &i_grammar);
 
