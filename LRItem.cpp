@@ -140,4 +140,27 @@ void printItemSet(std::string const &i_name, LRItemSet const &i_itemSet)
   }
   std::cout << "==================================================" << std::endl;
 }
+
+void printItemSetVector(std::string const &i_name, std::vector<LRItemSet> const &i_itemSetVector)
+{
+  std::cout << "===== " << i_name << " =====" << std::endl;
+  for(std::vector<LRItemSet>::const_iterator vit=i_itemSetVector.begin(); vit!=i_itemSetVector.end();++vit)
+  {
+    for(LRItemSet::const_iterator lit=vit->begin(); lit!=vit->end(); ++lit)
+    {
+      for(size_t i=0; i<lit->iteration(); ++i)
+      {
+        std::cout << "\t";
+      }
+      //for(size_t i=0; i<3 && lit!=i_itemSet.end(); ++i,++lit)
+      {
+        std::cout << lit->toString() << " ";
+      }
+
+      std::cout << std::endl;
+    }
+  }
+
+  std::cout << "==================================================" << std::endl;
+}
 /**************************************************/

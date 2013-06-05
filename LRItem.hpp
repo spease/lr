@@ -37,10 +37,12 @@ private:
 
 /********************----- Types -----********************/
 typedef std::set<LRItem> LRItemSet;
+typedef std::vector<LRItemSet> LRItemSetVector;
 /**************************************************/
 
 /********************----- Helper Functions -----********************/
 void printItemSet(std::string const &i_name, LRItemSet const &i_itemSet);
+void printItemSetVector(std::string const &i_name, std::vector<LRItemSet> const &i_itemSetVector);
 /**************************************************/
 
 #endif /* _LRITEM_HPP_ */
