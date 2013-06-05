@@ -296,6 +296,16 @@ void LRTable::insertAction(LRState const &i_state, SymbolList const &i_symbolLis
     m_actions.resize(i_state+1);
   }
 
+  /***** Don't insert duplicate *****/
+  std::pair<ActionRow::const_iterator, ActionRow::const_iterator> similarActions = m_actions[i_state].equal_range(i_symbolList);
+  for(ActionRow::const_iterator ait=similarActions.first; ait!=similarActions.second; ++ait)
+  {
+    if(ait->second == i_action)
+    {
+      return;
+    }
+  }
+
   m_actions[i_state].insert(std::pair<SymbolList, LRAction>(i_symbolList, i_action));
 }
 
@@ -304,6 +314,16 @@ void LRTable::insertPath(LRState const &i_state, SymbolList const &i_symbolList,
   if(i_state >= m_paths.size())
   {
     m_paths.resize(i_state+1);
+  }
+
+  /***** Don't insert duplicate *****/
+  std::pair<PathRow::const_iterator, PathRow::const_iterator> similarPaths = m_paths[i_state].equal_range(i_symbolList);
+  for(PathRow::const_iterator pit=similarPaths.first; pit!=similarPaths.second; ++pit)
+  {
+    if(pit->second == i_destinationState)
+    {
+      return;
+    }
   }
 
   m_paths[i_state].insert(std::pair<SymbolList, LRState>(i_symbolList, i_destinationState));
