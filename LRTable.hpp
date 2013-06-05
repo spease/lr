@@ -41,6 +41,7 @@ private:
 
   ActionTable m_actions;
   PathTable m_paths;
+  LRTable::Type m_type;
 };
 /**************************************************/
 

@@ -4,6 +4,7 @@
 
 /********************----- CLASS: LRTable -----********************/
 LRTable::LRTable(LRTable::Type const i_type, Grammar const &i_grammar)
+:m_type(i_type)
 {
   Grammar const &g=i_grammar;
 
