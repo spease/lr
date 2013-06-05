@@ -228,6 +228,28 @@ LRItemSet LRTable::closure(LRItemSet const &i_itemSet, size_t const i_iteration,
   return outputSet;
 }
 
+LRItemSet LRTable::computePaths(LRItemSet const &i_itemSet, size_t const i_iteration, Symbol const &i_symbol, Grammar const &i_grammar)
+{
+  LRItemSet outputSet;
+
+  for(LRItemSet::const_iterator isit=i_itemSet.begin(); isit!=i_itemSet.end(); ++isit)
+  {
+    SymbolList const &right=isit->production().right();
+    if(isit->rightPosition() >= right.count())
+    {
+      continue;
+    }
+
+    if(right[isit->rightPosition()] == i_symbol)
+    {
+      outputSet.insert(LRItem(&isit->production(), isit->rightPosition()+1, isit->lookahead(), i_iteration));
+    }
+  }
+
+  return LRTable::closure(outputSet, i_iteration, i_grammar);
+}
+
+
 void LRTable::insertAction(LRState const &i_state, SymbolList const &i_symbolList, LRAction const &i_action)
 {
   if(i_state >= m_actions.size())
@@ -268,24 +290,32 @@ LRState LRTable::path(LRState const &i_currentState, SymbolList const &i_symbolL
   return pathPair.first->second;
 }
 
-LRItemSet LRTable::computePaths(LRItemSet const &i_itemSet, size_t const i_iteration, Symbol const &i_symbol, Grammar const &i_grammar)
+std::string LRTable::toString() const
 {
-  LRItemSet outputSet;
-
-  for(LRItemSet::const_iterator isit=i_itemSet.begin(); isit!=i_itemSet.end(); ++isit)
+  std::string outputString;
+  for(size_t stateIndex=0; stateIndex<std::max(m_actions.size(), m_paths.size()); ++stateIndex)
   {
-    SymbolList const &right=isit->production().right();
-    if(isit->rightPosition() >= right.count())
+    outputString += std::to_string(stateIndex) + " ACTIONS:\n";
+    if(stateIndex < m_actions.size())
     {
-      continue;
+      for(ActionRow::const_iterator ait=m_actions[stateIndex].begin(); ait!=m_actions[stateIndex].end(); ++ait)
+      {
+        outputString += "\t (" + ait->first.toString() + ") -> " + ait->second.toString() + "\n";
+      }
     }
 
-    if(right[isit->rightPosition()] == i_symbol)
+    outputString += std::to_string(stateIndex) + " PATHS:\n";
+    if(stateIndex < m_paths.size())
     {
-      outputSet.insert(LRItem(&isit->production(), isit->rightPosition()+1, isit->lookahead(), i_iteration));
+      for(PathRow::const_iterator pit=m_paths[stateIndex].begin(); pit!=m_paths[stateIndex].end(); ++pit)
+      {
+        outputString += "\t (" + pit->first.toString() + ") -> " + std::to_string(pit->second) + "\n";
+      }
     }
+
+    outputString += "\n";
   }
 
-  return LRTable::closure(outputSet, i_iteration, i_grammar);
+  return outputString;
 }
 /**************************************************/

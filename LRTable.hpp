@@ -25,6 +25,8 @@ public:
 
   LRAction action(LRState const &i_currentState, SymbolList const &i_token) const;
   LRState path(LRState const &i_currentState, SymbolList const &i_symbol) const;
+
+  std::string toString() const;
 protected:
   static LRItemSet buildLRItems(Grammar const &i_grammar);
   static LRItemSet closure(LRItemSet const &i_item, size_t const i_iteration, Grammar const &i_grammar);
