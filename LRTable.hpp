@@ -28,7 +28,7 @@ public:
 
   std::string toString() const;
 protected:
-  static LRItemSet buildLRItems(Grammar const &i_grammar);
+  static LRItemSetVector buildLRItems(Grammar const &i_grammar);
   static LRItemSet closure(LRItemSet const &i_item, size_t const i_iteration, Grammar const &i_grammar);
   static LRItemSet computePaths(LRItemSet const &i_itemSet, size_t const i_iteration, Symbol const &i_symbol, Grammar const &i_grammar);
 

@@ -15,34 +15,71 @@ LRTable::LRTable(LRTable::Type const i_type, Grammar const &i_grammar)
   }
 
   /***** Build items *****/
-  LRItemSet items;
+  LRItemSetVector states;
   switch(i_type)
   {
   case Type::LR:
-    items=LRTable::buildLRItems(g);
+    states=LRTable::buildLRItems(g);
     break;
   }
-  if(items.empty())
+  if(states.empty())
   {
     throw std::range_error("No items built from grammar.");
   }
 
-#ifndef NDEBUG
-  printItemSet("Items", items);
-#endif
-
   /***** Populate table *****/
-  for(LRItemSet::const_iterator isit=items.begin(); isit!=items.end(); ++isit)
+  for(size_t i=0; i<states.size(); ++i)
   {
-    if(isit->lookahead() == END() && isit->rightPosition() >= isit->production().right().count() && isit->production().left()[0] == i_grammar.startSymbol())
+    /***** Build actions *****/
+    for(LRItemSet::const_iterator isit=states[i].begin(); isit!=states[i].end(); ++isit)
     {
-      this->insertAction(LRState(isit->iteration()), END(), ACCEPT());
+      if(isit->rightPosition() < isit->production().right().count() && isit->production().right()[isit->rightPosition()].isNonterminal())
+      {
+        Symbol const nextSymbol = isit->production().right()[isit->rightPosition()];
+        LRItemSet const currentPath=this->computePaths(states[i], i, nextSymbol, i_grammar);
+        for(size_t j=0; j<states.size(); ++j)
+        {
+          if(j==i)
+          {
+            continue;
+          }
+
+          if(currentPath == states[j])
+          {
+            this->insertAction(LRState(i), nextSymbol, SHIFT(LRState(j)));
+          }
+        }
+      }
+      else if(isit->rightPosition() >= isit->production().right().count())
+      {
+        this->insertAction(LRState(i), isit->lookahead(), REDUCE(&isit->production()));
+      }
+      else if(isit->lookahead() == END() && isit->rightPosition() >= isit->production().right().count() && isit->production().left()[0] == i_grammar.startSymbol())
+      {
+        this->insertAction(LRState(i), END(), ACCEPT());
+      }
     }
-    else if(isit->rightPosition() >= isit->production().right().count())
+
+    /***** Build paths *****/
+    for(SymbolSet::const_iterator ait=i_grammar.alphabetBegin(); ait!=i_grammar.alphabetEnd(); ++ait)
     {
-      this->insertAction(LRState(isit->iteration()), isit->lookahead(), REDUCE(&isit->production()));
+      if(ait->isNonterminal())
+      {
+        LRItemSet const currentPath=this->computePaths(states[i], i, *ait, i_grammar);
+        for(size_t j=0; j<states.size(); ++j)
+        {
+          if(currentPath == states[j])
+          {
+            this->insertPath(LRState(i),*ait, LRState(j));
+          }
+        }
+      }
     }
   }
+
+#ifndef NDEBUG
+  std::cout << this->toString() << std::endl;
+#endif
 }
 
 LRAction LRTable::action(LRState const &i_currentState, SymbolList const &i_symbolList) const
@@ -119,16 +156,14 @@ LRItemSet LRTable::buildLALRItems(Grammar const &i_grammar)
 }
 #endif
 
-LRItemSet LRTable::buildLRItems(Grammar const &i_grammar)
+LRItemSetVector LRTable::buildLRItems(Grammar const &i_grammar)
 {
-  LRItemSet items;
   std::vector<LRItemSet> states;
   size_t iteration=0;
 
   /***** Do start state *****/
   LRItemSet const startState = {LRItem(&i_grammar[0], 0, END(), iteration)};
   LRItemSet const startStateClosure = LRTable::closure(startState, iteration, i_grammar);
-  items.insert(startStateClosure.begin(), startStateClosure.end());
   states.push_back(startStateClosure);
   iteration=states.size();
 
@@ -139,36 +174,39 @@ LRItemSet LRTable::buildLRItems(Grammar const &i_grammar)
     for(size_t i=0; i<states.size(); ++i)
     {
       LRItemSet const &sourceState=states[i];
-      LRItemSet currentState;
       for(SymbolSet::const_iterator ait=i_grammar.alphabetBegin(); ait!=i_grammar.alphabetEnd(); ++ait)
       {
-        LRItemSet pathsResult = LRTable::computePaths(sourceState, iteration, *ait, i_grammar);
-        if(pathsResult.size() < 1)
+        LRItemSet currentState = LRTable::computePaths(sourceState, iteration, *ait, i_grammar);
+        if(currentState.size() < 1)
         {
           continue;
         }
 
-        for(LRItemSet::const_iterator prit=pathsResult.begin(); prit!=pathsResult.end(); ++prit)
+        bool stateFound=false;
+        for(std::vector<LRItemSet>::const_iterator vit=states.begin(); vit!=states.end(); ++vit)
         {
-          LRItemSet::const_iterator findResult = items.find(*prit);
-          if(findResult == items.end())
+          if(*vit == currentState)
           {
-            currentState.insert(*prit);
-            itemAdded = true;
+            stateFound = true;
+            break;
           }
         }
 
-        if(currentState.size() > 0)
+        if(!stateFound)
         {
-          items.insert(currentState.begin(), currentState.end());
           states.push_back(currentState);
           iteration=states.size();
+          itemAdded = true;
         }
       }
     }
   }
 
-  return items;
+#ifndef NDEBUG
+  printItemSetVector("States", states);
+#endif
+
+  return states;
 }
 
 LRItemSet LRTable::closure(LRItemSet const &i_itemSet, size_t const i_iteration, Grammar const &i_grammar)
