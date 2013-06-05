@@ -23,8 +23,8 @@ private:
   LRParser &operator =(LRParser const &)=delete;
   LRParser &operator =(LRParser &&)=delete;
 
-  Grammar const *m_grammarPointer;
-  size_t m_k;
+  LRStateStack m_stackState;
+  SymbolStack m_stackSymbol;
   LRTable m_table;
   LRTable::Type m_type;
 };

@@ -44,6 +44,17 @@ int main(int const argc, char const * const * const argv)
   */
 
   LRParser p(LRTable::Type::LR, 1, g);
+  LexText plt(TEST_FILEPATH);
+#ifndef NDEBUG
+  std::cout << "====================----- Parsing -----====================" << std::endl;
+#endif
+  if(p.parse(plt))
+  {
+    std::cout << "Parsing success." << std::endl;
+  }
+#ifndef NDEBUG
+  std::cout << "==================================================" << std::endl;
+#endif
 
 #ifndef NDEBUG
   std::cout << "====================----- " << TEST_FILEPATH << " -----====================" << std::endl;

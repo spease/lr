@@ -1,6 +1,7 @@
 #include "LRTable.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 /********************----- CLASS: LRTable -----********************/
 LRTable::LRTable(LRTable::Type const i_type, Grammar const &i_grammar)
