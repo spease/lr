@@ -26,6 +26,9 @@ public:
 
   Production const &production() const;
   LRState const &state() const;
+
+  std::string toString() const;
+  bool operator==(LRAction const &i_otherAction) const;
 protected:
   LRAction(Production const * const i_production);
   LRAction(LRState const i_state);
