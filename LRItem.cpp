@@ -8,8 +8,13 @@
 #include <memory>
 
 /********************----- CLASS: LRItem -----********************/
-LRItem::LRItem(Production const * const i_productionPointer, size_t const i_rightPosition, SymbolList const &i_lookahead, size_t const i_iteration)
-:m_productionPointer(i_productionPointer), m_rightPosition(i_rightPosition), m_lookahead(i_lookahead), m_iteration(i_iteration)
+LRItem::LRItem(Production const * const i_productionPointer, size_t const i_rightPosition, SymbolList const &i_lookahead)
+:m_productionPointer(i_productionPointer), m_rightPosition(i_rightPosition), m_lookahead(i_lookahead)
+{
+}
+
+LRItem::LRItem(Production const * const i_productionPointer, size_t const i_rightPosition)
+:m_productionPointer(i_productionPointer), m_rightPosition(i_rightPosition)
 {
 }
 
@@ -58,11 +63,6 @@ CompareResult LRItem::compare(LRItem const &i_otherItem) const
 
   /***** They are equal *****/
   return CompareResult::EQUAL;
-}
-
-size_t LRItem::iteration() const
-{
-  return m_iteration;
 }
 
 SymbolList const &LRItem::lookahead() const
@@ -127,13 +127,8 @@ void printItemSet(std::string const &i_name, LRItemSet const &i_itemSet)
   std::cout << "===== " << i_name << " =====" << std::endl;
   for(LRItemSet::const_iterator lit=i_itemSet.begin(); lit!=i_itemSet.end();++lit)
   {
-    for(size_t i=0; i<lit->iteration(); ++i)
     {
-      std::cout << "\t";
-    }
-    //for(size_t i=0; i<3 && lit!=i_itemSet.end(); ++i,++lit)
-    {
-      std::cout << lit->toString() << " ";
+      std::cout << "\t" << lit->toString() << " ";
     }
 
     std::cout << std::endl;
@@ -144,20 +139,16 @@ void printItemSet(std::string const &i_name, LRItemSet const &i_itemSet)
 void printItemSetVector(std::string const &i_name, std::vector<LRItemSet> const &i_itemSetVector)
 {
   std::cout << "===== " << i_name << " =====" << std::endl;
-  for(std::vector<LRItemSet>::const_iterator vit=i_itemSetVector.begin(); vit!=i_itemSetVector.end();++vit)
+  for(size_t i=0; i<i_itemSetVector.size(); ++i)
   {
-    for(LRItemSet::const_iterator lit=vit->begin(); lit!=vit->end(); ++lit)
+    for(LRItemSet::const_iterator lit=i_itemSetVector[i].begin(); lit!=i_itemSetVector[i].end(); ++lit)
     {
-      for(size_t i=0; i<lit->iteration(); ++i)
+      for(size_t x=0; x<i; ++x)
       {
         std::cout << "\t";
       }
-      //for(size_t i=0; i<3 && lit!=i_itemSet.end(); ++i,++lit)
-      {
-        std::cout << lit->toString() << " ";
-      }
 
-      std::cout << std::endl;
+      std::cout << lit->toString() << " " << std::endl;
     }
   }
 
