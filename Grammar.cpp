@@ -72,7 +72,7 @@ SymbolMap Grammar::buildFirst() const
       Symbol const &leftSymbol=production.left()[0];
       SymbolList const &right=production.right();
 
-      SymbolSet ss = this->firstList(right, prevMap);
+      SymbolSet ss = Grammar::firstList(right, prevMap);
 
       /***** Add list *****/
       currentMap[leftSymbol].insert(ss.begin(), ss.end());
