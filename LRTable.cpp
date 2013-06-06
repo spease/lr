@@ -37,7 +37,7 @@ LRTable::LRTable(LRTable::Type const i_type, Grammar const &i_grammar)
     /***** Build actions *****/
     for(LRItemSet::const_iterator isit=states[i].begin(); isit!=states[i].end(); ++isit)
     {
-      if(isit->rightPosition() < isit->production().right().count() && isit->production().right()[isit->rightPosition()].isNonterminal())
+      if(isit->rightPosition() < isit->production().right().count() && isit->production().right()[isit->rightPosition()].isTerminal())
       {
         Symbol const nextSymbol = isit->production().right()[isit->rightPosition()];
         LRItemSet const currentPath=this->computePaths(states[i], nextSymbol, i_grammar);
