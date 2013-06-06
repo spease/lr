@@ -24,6 +24,7 @@ private:
 /**************************************************/
 
 typedef std::vector<Production> ProductionVector;
+typedef std::vector<Production const *> ProductionConstPtrVector;
 
 /********************----- Operators -----********************/
 Production operator>>=(SymbolList &&i_left, SymbolList &&i_right);

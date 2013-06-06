@@ -28,9 +28,12 @@ public:
 
   std::string toString() const;
 protected:
+  static LRItemSetVector buildLALRItems(Grammar const &i_grammar);
   static LRItemSetVector buildLRItems(Grammar const &i_grammar);
-  static LRItemSet closure(LRItemSet const &i_item, size_t const i_iteration, Grammar const &i_grammar);
-  static LRItemSet computePaths(LRItemSet const &i_itemSet, size_t const i_iteration, Symbol const &i_symbol, Grammar const &i_grammar);
+  static LRItemSet closure(LRItemSet const &i_item, Grammar const &i_grammar);
+  static LRItemSet computeKernelItems(LRItemSet const &i_kernelItems, LRItemSet const &i_nonkernelItems, Grammar const &i_grammar);
+  static LRItemSet computeNonkernelItems(LRItemSet const &i_kernelItems, Grammar const &i_grammar);
+  static LRItemSet computePaths(LRItemSet const &i_itemSet, Symbol const &i_symbol, Grammar const &i_grammar);
 
   void insertAction(LRState const &i_state, SymbolList const &i_symbolList, LRAction const &i_action);
   void insertPath(LRState const &i_state, SymbolList const &i_symbolList, LRState const &i_destinationState);

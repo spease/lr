@@ -19,6 +19,9 @@ LRTable::LRTable(LRTable::Type const i_type, Grammar const &i_grammar)
   LRItemSetVector states;
   switch(i_type)
   {
+  case Type::LALR:
+    states=LRTable::buildLALRItems(g);
+    break;
   case Type::LR:
     states=LRTable::buildLRItems(g);
     break;
@@ -37,7 +40,7 @@ LRTable::LRTable(LRTable::Type const i_type, Grammar const &i_grammar)
       if(isit->rightPosition() < isit->production().right().count() && isit->production().right()[isit->rightPosition()].isNonterminal())
       {
         Symbol const nextSymbol = isit->production().right()[isit->rightPosition()];
-        LRItemSet const currentPath=this->computePaths(states[i], i, nextSymbol, i_grammar);
+        LRItemSet const currentPath=this->computePaths(states[i], nextSymbol, i_grammar);
         for(size_t j=0; j<states.size(); ++j)
         {
           if(j==i)
@@ -66,7 +69,7 @@ LRTable::LRTable(LRTable::Type const i_type, Grammar const &i_grammar)
     {
       if(ait->isNonterminal())
       {
-        LRItemSet const currentPath=this->computePaths(states[i], i, *ait, i_grammar);
+        LRItemSet const currentPath=this->computePaths(states[i], *ait, i_grammar);
         for(size_t j=0; j<states.size(); ++j)
         {
           if(currentPath == states[j])
@@ -103,70 +106,153 @@ LRAction LRTable::action(LRState const &i_currentState, SymbolList const &i_symb
   return actionPair.first->second;
 }
 
-#if 0
-LRItemSet LRTable::computeKernelItems(LRItemSet const &i_nonkernelItems, size_t const i_iteration, Grammar const &i_grammar)
+LRItemSet LRTable::computeKernelItems(LRItemSet const &i_kernelItems, LRItemSet const &i_nonkernelItems, Grammar const &i_grammar)
 {
+  LRItemSet outputItems;
+
+  for(LRItemSet::const_iterator kit=i_kernelItems.begin(); kit!=i_kernelItems.end(); ++kit)
+  {
+    SymbolList const &right=kit->production().right();
+    if(kit->rightPosition() < right.count())
+    {
+      outputItems.insert(LRItem(&kit->production(), kit->rightPosition()+1, kit->lookahead()));
+    }
+  }
+
+  for(LRItemSet::const_iterator nit=i_nonkernelItems.begin(); nit!=i_nonkernelItems.end(); ++nit)
+  {
+    SymbolList const &right=nit->production().right();
+    if(nit->rightPosition() < right.count())
+    {
+      outputItems.insert(LRItem(&nit->production(), nit->rightPosition()+1, nit->lookahead()));
+    }
+  }
+
+  return outputItems;
 }
 
-LRItemSet LRTable::computeNonkernelItems(LRItemSet const &i_kernelItems, size_t const i_iteration, Grammar const &i_grammar)
+LRItemSet LRTable::computeNonkernelItems(LRItemSet const &i_kernelItems, Grammar const &i_grammar)
 {
-}
+  LRItemSet nonkernelItems;
 
-LRItemSet LRTable::buildLALRItems(Grammar const &i_grammar)
-{
-  std::vector<LRItemSet> kernelItems;
-  std::vector<LRItemSet> nonkernelItems;
-  size_t iteration=0;
+  /***** Generate items from kernel items *****/
+  for(LRItemSet::const_iterator kit=i_kernelItems.begin(); kit!=i_kernelItems.end(); ++kit)
+  {
+    SymbolList const &right=kit->production().right();
+    if(kit->rightPosition() >= right.count())
+    {
+      continue;
+    }
 
-  bool itemAdded=true;
+    Symbol const &nextSymbol = right[kit->rightPosition()];
+    if(!nextSymbol.isNonterminal())
+    {
+      continue;
+    }
+
+    ProductionConstPtrVector productionPointers=i_grammar.productionPointers(nextSymbol);
+    if(productionPointers.empty())
+    {
+      continue;
+    }
+
+    for(Production const *p: productionPointers)
+    {
+      nonkernelItems.insert(LRItem(p, 0));
+    }
+  }
+
+  /***** Generate items from previously generated items *****/
+  bool itemAdded = true;
   while(itemAdded)
   {
-    LRItemSet currentKernelItems;
-    LRItemSet currentNonkernelItems;
+    itemAdded = false;
 
+    for(LRItemSet::const_iterator nit=nonkernelItems.begin(); nit!=nonkernelItems.end(); ++nit)
+    {
+      /***** Check if end of rule *****/
+      SymbolList const &right=nit->production().right();
+      if(nit->rightPosition() >= right.count())
+      {
+        continue;
+      }
+
+      /***** Get next symbol, if nonterminal *****/
+      Symbol const &nextSymbol = right[nit->rightPosition()];
+      if(!nextSymbol.isNonterminal())
+      {
+        continue;
+      }
+
+      /***** Find production rules *****/
+      ProductionConstPtrVector productionPointers=i_grammar.productionPointers(nextSymbol);
+      if(productionPointers.empty())
+      {
+        continue;
+      }
+
+      /***** Maybe insert production rules *****/
+      for(Production const *p:productionPointers)
+      {
+        /***** Check if item exists *****/
+        LRItem item(p, 0);
+        if(nonkernelItems.find(item) != nonkernelItems.end())
+        {
+          continue;
+        }
+      
+        /***** Insert item *****/
+        nonkernelItems.insert(std::move(item));
+        itemAdded = true;
+      }
+    }
+  }
+
+  /***** Return *****/
+  return nonkernelItems;
+}
+
+LRItemSetVector LRTable::buildLALRItems(Grammar const &i_grammar)
+{
+  std::vector<LRItemSet> outputItems;
+
+  bool itemAdded=true;
+  size_t iteration=0;
+  LRItemSet kernelItems;
+  LRItemSet nonkernelItems;
+  while(itemAdded)
+  {
     /***** Build kernel items *****/
     if(iteration == 0)
     {
-      currentKernelItems.insert(LRItem(&i_grammar[0], 0, END(), iteration));
+      kernelItems.insert(LRItem(&i_grammar[0], 0, END()));
     }
     else
     {
-      currentKernelItems = LRTable::computeKernelItems(nonkernelItems[iteration-1], iteration, i_grammar);
+      kernelItems = LRTable::computeKernelItems(kernelItems, nonkernelItems, i_grammar);
     }
 
     /***** Build nonkernel items *****/
-    currentNonkernelItems = LRTable::computeNonkernelItems(currentKernelItems, iteration, i_grammar);
+    nonkernelItems = LRTable::computeNonkernelItems(kernelItems, i_grammar);
 
-    /***** Allocate *****/
-    if(currentKernelItems.size() > 0 || currentNonkernelItems.size() > 0)
-    {
-      kernelItems.push_back(LRItemSet());
-      nonkernelItems.push_back(LRItemSet());
-    }
+    /***** Store them *****/
+    outputItems[iteration].insert(kernelItems.begin(), kernelItems.end());
+    outputItems[iteration].insert(nonkernelItems.begin(), nonkernelItems.end());
 
-    /***** Save *****/
-    if(currentKernelItems.size() > 0)
-    {
-      kernelItems[iteration].insert(currentKernelItems.begin(), currentKernelItems.end());
-    }
-    if(currentNonkernelItems.size() > 0)
-    {
-      nonkernelItems[iteration].insert(currentNonkernelItems.begin(), currentNonkernelItems.end());
-    }
+    ++iteration;
   }
+
+  return outputItems;
 }
-#endif
 
 LRItemSetVector LRTable::buildLRItems(Grammar const &i_grammar)
 {
   std::vector<LRItemSet> states;
-  size_t iteration=0;
 
   /***** Do start state *****/
-  LRItemSet const startState = {LRItem(&i_grammar[0], 0, END(), iteration)};
-  LRItemSet const startStateClosure = LRTable::closure(startState, iteration, i_grammar);
+  LRItemSet const startState = {LRItem(&i_grammar[0], 0, END())};
+  LRItemSet const startStateClosure = LRTable::closure(startState, i_grammar);
   states.push_back(startStateClosure);
-  iteration=states.size();
 
   bool itemAdded = true;
   while(itemAdded)
@@ -177,7 +263,7 @@ LRItemSetVector LRTable::buildLRItems(Grammar const &i_grammar)
       LRItemSet const &sourceState=states[i];
       for(SymbolSet::const_iterator ait=i_grammar.alphabetBegin(); ait!=i_grammar.alphabetEnd(); ++ait)
       {
-        LRItemSet currentState = LRTable::computePaths(sourceState, iteration, *ait, i_grammar);
+        LRItemSet currentState = LRTable::computePaths(sourceState, *ait, i_grammar);
         if(currentState.size() < 1)
         {
           continue;
@@ -196,7 +282,6 @@ LRItemSetVector LRTable::buildLRItems(Grammar const &i_grammar)
         if(!stateFound)
         {
           states.push_back(currentState);
-          iteration=states.size();
           itemAdded = true;
         }
       }
@@ -210,7 +295,7 @@ LRItemSetVector LRTable::buildLRItems(Grammar const &i_grammar)
   return states;
 }
 
-LRItemSet LRTable::closure(LRItemSet const &i_itemSet, size_t const i_iteration, Grammar const &i_grammar)
+LRItemSet LRTable::closure(LRItemSet const &i_itemSet, Grammar const &i_grammar)
 {
   if(!i_grammar.isContextFree())
   {
@@ -251,7 +336,7 @@ LRItemSet LRTable::closure(LRItemSet const &i_itemSet, size_t const i_iteration,
 
         for(SymbolSet::const_iterator esit=expectedSymbols.begin(); esit!=expectedSymbols.end(); ++esit)
         {
-          LRItem finalItem(&p, 0, *esit, i_iteration);
+          LRItem finalItem(&p, 0, *esit);
           
           LRItemSet::const_iterator osit=outputSet.find(finalItem);
           if(osit == outputSet.end())
@@ -267,7 +352,7 @@ LRItemSet LRTable::closure(LRItemSet const &i_itemSet, size_t const i_iteration,
   return outputSet;
 }
 
-LRItemSet LRTable::computePaths(LRItemSet const &i_itemSet, size_t const i_iteration, Symbol const &i_symbol, Grammar const &i_grammar)
+LRItemSet LRTable::computePaths(LRItemSet const &i_itemSet, Symbol const &i_symbol, Grammar const &i_grammar)
 {
   LRItemSet outputSet;
 
@@ -281,11 +366,11 @@ LRItemSet LRTable::computePaths(LRItemSet const &i_itemSet, size_t const i_itera
 
     if(right[isit->rightPosition()] == i_symbol)
     {
-      outputSet.insert(LRItem(&isit->production(), isit->rightPosition()+1, isit->lookahead(), i_iteration));
+      outputSet.insert(LRItem(&isit->production(), isit->rightPosition()+1, isit->lookahead()));
     }
   }
 
-  return LRTable::closure(outputSet, i_iteration, i_grammar);
+  return LRTable::closure(outputSet, i_grammar);
 }
 
 
