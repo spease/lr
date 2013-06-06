@@ -20,11 +20,11 @@ bool LRParser::parse(Lex &i_lex)
   Symbol token = i_lex.pop();
   while(!m_stackState.empty())
   {
-    LRState s=m_stackState.top();
-    LRAction const &action=m_table.action(s, token);
+    LRState state=m_stackState.top();
+    LRAction const &action=m_table.action(state, token);
 
 #ifndef NDEBUG
-    std::cout << "(" + std::to_string(s) + " + " + token.toString() + ") --> " + action.toString() << std::endl;
+    std::cout << "(" + std::to_string(state) + " + " + token.toString() + ") --> " + action.toString() << std::endl;
 #endif
 
     if(action.isShift())
@@ -45,7 +45,7 @@ bool LRParser::parse(Lex &i_lex)
         m_stackState.pop();
       }
       m_stackSymbol.push(leftSymbol);
-      m_stackState.push(m_table.path(s, leftSymbol));
+      m_stackState.push(m_table.path(state, leftSymbol));
     }
     else if(action.isAccept())
     {

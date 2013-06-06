@@ -37,30 +37,26 @@ LRTable::LRTable(LRTable::Type const i_type, Grammar const &i_grammar)
     /***** Build actions *****/
     for(LRItemSet::const_iterator isit=states[i].begin(); isit!=states[i].end(); ++isit)
     {
-      if(isit->rightPosition() < isit->production().right().count() && isit->production().right()[isit->rightPosition()].isTerminal())
+      SymbolList const &right=isit->production().right();
+      if(isit->rightPosition() < right.count() && right[isit->rightPosition()].isTerminal())
       {
-        Symbol const nextSymbol = isit->production().right()[isit->rightPosition()];
+        Symbol const &nextSymbol = right[isit->rightPosition()];
         LRItemSet const currentPath=this->computePaths(states[i], nextSymbol, i_grammar);
         for(size_t j=0; j<states.size(); ++j)
         {
-          if(j==i)
-          {
-            continue;
-          }
-
           if(currentPath == states[j])
           {
             this->insertAction(LRState(i), nextSymbol, SHIFT(LRState(j)));
           }
         }
       }
-      else if(isit->rightPosition() >= isit->production().right().count())
-      {
-        this->insertAction(LRState(i), isit->lookahead(), REDUCE(&isit->production()));
-      }
-      else if(isit->lookahead() == END() && isit->rightPosition() >= isit->production().right().count() && isit->production().left()[0] == i_grammar.startSymbol())
+      else if(isit->rightPosition() >= right.count() && isit->lookahead() == END() && isit->production().left()[0] == i_grammar.startSymbol())
       {
         this->insertAction(LRState(i), END(), ACCEPT());
+      }
+      else if(isit->rightPosition() >= right.count())
+      {
+        this->insertAction(LRState(i), isit->lookahead(), REDUCE(&isit->production()));
       }
     }
 
