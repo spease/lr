@@ -97,7 +97,8 @@ LRAction LRTable::action(LRState const &i_currentState, SymbolList const &i_symb
   }
 
   /***** More than one ******/
-  ActionRow::const_iterator actionNext = ++actionPair.first;
+  ActionRow::const_iterator actionNext = actionPair.first;
+  ++actionNext;
   if(actionNext != actionPair.second)
   {
     throw std::range_error("Shift/Shift conflict");
