@@ -266,6 +266,21 @@ SymbolSet Grammar::firstList(SymbolList const &i_symbolList, SymbolMap const &i_
   return ss;
 }
 
+ProductionConstPtrVector Grammar::productionPointers(SymbolList const &i_left) const
+{
+  ProductionConstPtrVector outputVector;
+
+  for(Production const &p : m_productions)
+  {
+    if(p.left() == i_left)
+    {
+      outputVector.push_back(&p);
+    }
+  }
+
+  return outputVector;
+}
+
 size_t Grammar::productionCount() const
 {
   return m_productions.size();

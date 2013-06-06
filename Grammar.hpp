@@ -18,6 +18,7 @@ public:
   SymbolSet::const_iterator alphabetBegin() const;
   SymbolSet::const_iterator alphabetEnd() const;
   bool isContextFree() const;
+  ProductionConstPtrVector productionPointers(SymbolList const &i_left) const;
   size_t productionCount() const;
   Symbol const &startSymbol() const;
 
